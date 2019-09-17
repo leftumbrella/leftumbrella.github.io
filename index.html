@@ -187,8 +187,12 @@
 <h5 id="例如：-1"><a href="#例如：-1" class="headerlink" title="例如："></a>例如：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">autoPrint(1,&quot;hello&quot;,2.37,ture);</span><br><span class="line">//以下为输出：</span><br><span class="line">1</span><br><span class="line">hello</span><br><span class="line">2.37</span><br><span class="line">ture</span><br></pre></td></tr></table></figure>
 <p>需要注意的是，因为会递归调用，而函数本身没有出口。当递归到 <em>没有参数</em> 的时候，无法再次调用自身。</p>
 <p>因而在构建这样的函数模板时 <strong>必须重载一个与本函数重载且无参的函数</strong></p>
-<p>所以，上面的写法，在编译过程中无法通过，因为当递归到 <em>args…</em> 没有参数的时候，程序无法继续进行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">autoPrint()&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>只有与如上的无参函数同时存在，程序才会正常执行。</p>
+<p>所以，上面的写法，在编译过程中无法通过，因为当递归到 <em>args…</em> 没有参数的时候，程序无法继续进行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void autoPrint()&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>只有与如上的无参函数 <strong>同时存在</strong> ，程序才会正常执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sizeof...(args)</span><br></pre></td></tr></table></figure>
+<p>如果想要得知那些 <em>不定参数</em> 具体有多少个的时候，就需要使用 <em>sizeof…()</em> 来获得。</p>
+<hr>
+<p>当然，在函数中不必非要递归调用自己，亦可进行想要的操作。譬如进行组合继承等更加复杂的操作。</p>
 
       
 
@@ -810,11 +814,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">诗词</a>
+                <a href="javascript:void(0)" class="js-tag color3">文章</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">文章</a>
+                <a href="javascript:void(0)" class="js-tag color3">诗词</a>
               </li>
             
             <div class="clearfix"></div>
