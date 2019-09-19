@@ -16,7 +16,7 @@
 <meta property="og:site_name" content="左手撑伞的博客">
 <meta property="og:description" content="在下文中： vptr == virtual pointer == (虚指针)  vtab == virtual table == (虚表)  Part 1: 多态  当一个类中存在虚函数时， 这个类的大小会比数据本身多一个指针的空间 。12345678910111213141516171819202122class A&amp;#123;public:    virtual void fun1()&amp;#1">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-19T10:40:44.321Z">
+<meta property="og:updated_time" content="2019-09-19T10:43:34.594Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="C++ 面向对象之 virtual pointer 和 virtual tab">
 <meta name="twitter:description" content="在下文中： vptr == virtual pointer == (虚指针)  vtab == virtual table == (虚表)  Part 1: 多态  当一个类中存在虚函数时， 这个类的大小会比数据本身多一个指针的空间 。12345678910111213141516171819202122class A&amp;#123;public:    virtual void fun1()&amp;#1">
@@ -193,7 +193,17 @@
 <p>而 <strong><em>class C</em></strong> 独立存在，并且拥有 <strong>三个非虚成员函数</strong> ，同样拥有三个 <strong><em>int</em></strong> 类型的成员。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int main() &#123;</span><br><span class="line">	std::cout &lt;&lt; sizeof(A) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; sizeof(B) &lt;&lt; std::endl;</span><br><span class="line">	std::cout &lt;&lt; sizeof(C) &lt;&lt; std::endl;</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 <p>众所周知，在 32 位系统中，一个 <strong><em>int</em></strong> 类型的数据占据四个字节。当我们 <strong><em>sizeof()</em></strong> 这三个类时，应当得到三个 <strong><em>int</em></strong> 的大小也就是 <strong><em>12</em></strong> 个字节数。</p>
 <p>但由于虚函数的存在， <strong><em>class A</em></strong> 与 <strong><em>class B</em></strong> 应当多出一个指针大小，亦为四字节。</p>
-<center><br><br></center><br><!-- ![运行效果](./images/writings_vptr_1.png) --><br><br>如图所示， <strong><em>class A</em></strong> 的子类 <strong><em>class B</em></strong> 继承了虚函数以及一个指针大小内存。<br><br>而在没有任何虚函数的 <strong><em>class C</em></strong> 中，所占内存只有成员大小。<br><br>并且， <strong>无论存在多少个虚函数，所占用的内存始终为一个指针大小</strong> 。<br>## Part 2:<br>&gt;在含有虚函数的类中多出来的虚指针指向的位置<br><br><strong>虚指针指向一张记载有虚函数地址的表</strong> ，这张记载有虚函数位置的表称为 <strong><em>virtual table</em></strong> (虚表)。<br><br><strong><em>virtual table</em></strong> 中的每一个函数指针都指向一个虚函数，也就是说 <strong><em>virtual table</em></strong> 中的函数指针个数等同于该类中的虚函数的个数。<br><br>继承的类和父类分别拥有各自的 <strong><em>virtual table</em></strong> ，这些 <strong><em>virtual table</em></strong> 指向他们各自所需要调用的虚函数的位置，因而当分别使用某一个类的对象来调用虚函数的时候，会自动寻找到适当的函数进而调用。<br><center><br><br></center>
+
+<!-- ![运行效果](./images/writings_vptr_1.png) -->
+<p>如图所示， <strong><em>class A</em></strong> 的子类 <strong><em>class B</em></strong> 继承了虚函数以及一个指针大小内存。</p>
+<p>而在没有任何虚函数的 <strong><em>class C</em></strong> 中，所占内存只有成员大小。</p>
+<p>并且， <strong>无论存在多少个虚函数，所占用的内存始终为一个指针大小</strong> 。</p>
+<h2 id="Part-2"><a href="#Part-2" class="headerlink" title="Part 2:"></a>Part 2:</h2><blockquote>
+<p>在含有虚函数的类中多出来的虚指针指向的位置</p>
+</blockquote>
+<p><strong>虚指针指向一张记载有虚函数地址的表</strong> ，这张记载有虚函数位置的表称为 <strong><em>virtual table</em></strong> (虚表)。</p>
+<p><strong><em>virtual table</em></strong> 中的每一个函数指针都指向一个虚函数，也就是说 <strong><em>virtual table</em></strong> 中的函数指针个数等同于该类中的虚函数的个数。</p>
+<p>继承的类和父类分别拥有各自的 <strong><em>virtual table</em></strong> ，这些 <strong><em>virtual table</em></strong> 指向他们各自所需要调用的虚函数的位置，因而当分别使用某一个类的对象来调用虚函数的时候，会自动寻找到适当的函数进而调用。</p>
 
 <h2 id="Part-3"><a href="#Part-3" class="headerlink" title="Part 3:"></a>Part 3:</h2><blockquote>
 <p>动态绑定</p>
