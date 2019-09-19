@@ -156,6 +156,86 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-文章_vptr and vtab" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/03/23/文章_vptr and vtab/">C++ 面向对象之 virtual pointer 和 virtual tab</a>
+    </h1>
+  
+
+        
+        <a href="/2019/03/23/文章_vptr and vtab/" class="archive-article-date">
+  	<time datetime="2019-03-23T07:30:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p><em>在下文中：</em><br><br> <em>vptr == virtual pointer == (虚指针)</em> <br><br> <em>vtab == virtual table == (虚表)</em></p>
+</blockquote>
+<h2 id="Part-1"><a href="#Part-1" class="headerlink" title="Part 1:"></a>Part 1:</h2><blockquote>
+<p>多态</p>
+</blockquote>
+<p>当一个类中存在虚函数时， <strong>这个类的大小会比数据本身多一个指针的空间</strong> 。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void fun1()&#123;&#125;</span><br><span class="line">    virtual void fun2()&#123;&#125;</span><br><span class="line">    void fun3()&#123;&#125;</span><br><span class="line">    void fun4()&#123;&#125;</span><br><span class="line">private:</span><br><span class="line">    int a,b,c;</span><br><span class="line">&#125;;</span><br><span class="line">class B : public A&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void fun1()&#123;&#125;</span><br><span class="line">    void bFun()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line">class C&#123;</span><br><span class="line">public:</span><br><span class="line">    void cFun1()&#123;&#125;</span><br><span class="line">    void cFun2()&#123;&#125;</span><br><span class="line">    void cFun3()&#123;&#125;</span><br><span class="line">private:</span><br><span class="line">    int a,b,c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">文章</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/03/23/文章_vptr and vtab/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-文章_Abort variadic templates" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -176,24 +256,16 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="关于数量不定的模板参数量"><a href="#关于数量不定的模板参数量" class="headerlink" title="关于数量不定的模板参数量"></a>关于数量不定的模板参数量</h1><blockquote>
+        <blockquote>
 <p>“ . . . “</p>
 </blockquote>
 <p>在 C++11 中，引入了新的特性，允许在模板参数中使用数量不确定的参数。</p>
-<p><strong>当然，这个函数需要至少有一个固定参数。</strong></p>
+<p>当然，这个函数需要 <strong>至少有一个固定参数。</strong></p>
 <h5 id="例如："><a href="#例如：" class="headerlink" title="例如："></a>例如：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">template &lt;typename T, typename... Types&gt;</span><br><span class="line">void autoPrint(const T&amp; a, const Type&amp;... args)&#123;</span><br><span class="line">    cout &lt;&lt; a &lt;&lt; endl;</span><br><span class="line">    autoPrint(args...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如以上程序所示，在函数模板中， Types 代表着暂不确定数量的参数。</p>
 <p>因此，当使用者调用起 autoPrint 函数时，如果参数大于一个，在执行完函数内容以后，会递归调用自身，直到 <em>没有参数</em> 为止。</p>
 <h5 id="例如：-1"><a href="#例如：-1" class="headerlink" title="例如："></a>例如：</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">autoPrint(1,&quot;hello&quot;,2.37,ture);</span><br><span class="line">//以下为输出：</span><br><span class="line">1</span><br><span class="line">hello</span><br><span class="line">2.37</span><br><span class="line">ture</span><br></pre></td></tr></table></figure>
-<p>需要注意的是，因为会递归调用，而函数本身没有出口。当递归到 <em>没有参数</em> 的时候，无法再次调用自身。</p>
-<p>因而在构建这样的函数模板时 <strong>必须重载一个与本函数重载且无参的函数</strong></p>
-<p>所以，上面的写法，在编译过程中无法通过，因为当递归到 <em>args…</em> 没有参数的时候，程序无法继续进行。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">void autoPrint()&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>只有与如上的无参函数 <strong>同时存在</strong> ，程序才会正常执行。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sizeof...(args)</span><br></pre></td></tr></table></figure>
-<p>如果想要得知那些 <em>不定参数</em> 具体有多少个的时候，就需要使用 <em>sizeof…()</em> 来获得。</p>
-<hr>
-<p>当然，在函数中不必非要递归调用自己，亦可进行想要的操作。譬如进行组合继承等更加复杂的操作。</p>
-
+        
       
 
       
