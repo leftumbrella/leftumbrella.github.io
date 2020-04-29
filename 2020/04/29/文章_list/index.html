@@ -6,15 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/master">
-  <title>Archives | 左手撑伞的博客</title>
+  <title>文章_list | 左手撑伞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="左手撑伞的博客">
-<meta property="og:url" content="https://github.com/leftumbrella/leftumbrella.github.io/tree/master/archives/page/2/index.html">
+  <meta name="description" content="list 和 vector 一样，也是一种线性数据结构，不同于 vector 的是， list 所占用的内存空间并不是连续的，但它通过各种手段制造出一种连续内存空间的假象； list 因其内部结构的某些特点，在动态操作上能够消耗及其短暂的时间。  list 是由什么构成的？通常来说，一个 list 类仅需存放一根指向 list node 的指针；表示 list 节点的 list node 中才">
+<meta name="keywords" content="文章,C++STL,数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文章_list">
+<meta property="og:url" content="https://github.com/leftumbrella/leftumbrella.github.io/tree/master/2020/04/29/文章_list/index.html">
 <meta property="og:site_name" content="左手撑伞的博客">
+<meta property="og:description" content="list 和 vector 一样，也是一种线性数据结构，不同于 vector 的是， list 所占用的内存空间并不是连续的，但它通过各种手段制造出一种连续内存空间的假象； list 因其内部结构的某些特点，在动态操作上能够消耗及其短暂的时间。  list 是由什么构成的？通常来说，一个 list 类仅需存放一根指向 list node 的指针；表示 list 节点的 list node 中才">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://github.com/2020/04/29/文章_list/list.png">
+<meta property="og:updated_time" content="2020-04-29T11:10:11.590Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="左手撑伞的博客">
+<meta name="twitter:title" content="文章_list">
+<meta name="twitter:description" content="list 和 vector 一样，也是一种线性数据结构，不同于 vector 的是， list 所占用的内存空间并不是连续的，但它通过各种手段制造出一种连续内存空间的假象； list 因其内部结构的某些特点，在动态操作上能够消耗及其短暂的时间。  list 是由什么构成的？通常来说，一个 list 类仅需存放一根指向 list node 的指针；表示 list 节点的 list node 中才">
+<meta name="twitter:image" content="https://github.com/2020/04/29/文章_list/list.png">
   
     <link rel="alternative" href="/atom.xml" title="左手撑伞的博客" type="application/atom+xml">
   
@@ -154,261 +161,203 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-文章_list" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/18/诗词_西江月/" class="archive-article-date">
-  	<time datetime="2018-11-17T17:11:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-18</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/18/诗词_西江月/">西江月</a>
+    <h1 class="article-title" itemprop="name">
+      文章_list
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/04/29/文章_list/" class="archive-article-date">
+  	<time datetime="2020-04-29T08:55:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p> <strong><em>list</em></strong> 和 <strong><em>vector</em></strong> 一样，也是一种线性数据结构，不同于 <strong><em>vector</em></strong> 的是， <strong><em>list</em></strong> 所占用的内存空间并不是连续的，但它通过各种手段制造出一种连续内存空间的<em>假象</em>； <strong><em>list</em></strong> 因其内部结构的某些特点，在动态操作上能够消耗及其短暂的时间。</p>
+</blockquote>
+<h4 id="list-是由什么构成的？"><a href="#list-是由什么构成的？" class="headerlink" title="list 是由什么构成的？"></a><strong><em>list</em></strong> 是由什么构成的？</h4><p>通常来说，一个 <strong><em>list</em></strong> 类仅需存放一根指向 <strong><em>list node</em></strong> 的指针；表示 <strong><em>list</em></strong> 节点的 <strong><em>list node</em></strong> 中才为应储存的内容。</p>
+<ul>
+<li><p><strong><em>list</em></strong> </p>
+<ul>
+<li><p><strong><em> </em>list node*</strong> —— 指向列表节点的指针</p>
+<ul>
+<li><strong><em> </em>prev[ list node* ]*</strong> —— 指向列表中上一个元素位置的指针</li>
+<li><strong><em> </em>next[ list node* ]*</strong> —— 指向列表中下一个元素位置的指针</li>
+<li><strong><em>data[ T ]</em></strong> —— 列表中存放的数据</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<a id="more"></a>
+<h4 id="STL-中的-list"><a href="#STL-中的-list" class="headerlink" title="STL 中的 list"></a>STL 中的 <strong><em>list</em></strong></h4><center><br><img src="/2020/04/29/文章_list/list.png" title="list内部结构"><br></center>
+
+<p>如上图所示，在 STL 中， <strong><em>list</em></strong> 所呈现的内部结构为 <strong>双向环状列表</strong> ；</p>
+<p>并且，此 <strong><em>list</em></strong> 首节点的 <strong><em>prev</em></strong> 指针与末节点的 <strong><em>next</em></strong> 指针均指向一个并不存在于 <strong><em>list</em></strong> 容器内部的节点，从而形成环状。</p>
+<h5 id="list-容器的-iterator"><a href="#list-容器的-iterator" class="headerlink" title="list 容器的 iterator"></a><strong><em>list</em></strong> 容器的 <strong><em>iterator</em></strong></h5><p>因 <strong><em>list</em></strong> 内部存储的非连续性，因而无法像 <strong><em>array</em></strong> 或 <strong><em>vector</em></strong> 一样使用正常的指针来充当 <strong><em>iterator</em></strong>。</p>
+<ul>
+<li><strong><em>list iterator</em></strong><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">typedef T value_type;</span><br><span class="line">typedef T* pointer;</span><br><span class="line">typedef T&amp; reference;</span><br><span class="line">typedef bidirectional_iterator_tag iterator_category;</span><br><span class="line">typedef ptrdiff_t difference_type;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>上表列出了 <strong><em>list iterator</em></strong> 定义的五个 <strong><em>iterator_traits</em></strong> 所需 type；除此以外， <strong><em>list iterator</em></strong> 内部还应存在一根指向 <strong><em>list node</em></strong> 的指针：</p>
+<p><code>list_node&lt;T&gt;* node;</code></p>
+<h6 id="list-iterator-中运算符的重载"><a href="#list-iterator-中运算符的重载" class="headerlink" title="list iterator 中运算符的重载"></a><strong><em>list iterator</em></strong> 中运算符的重载</h6><p>为了在使用中模拟连续空间， <strong><em>list iterator</em></strong> 对与寻常指针所支持的一系列运算符进行了适应自身的重载。</p>
+<ul>
+<li><p>operator++</p>
+<ul>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; list_iterator&lt;T&gt;&amp; <span class="keyword">operator</span>++()&#123;</span><br><span class="line">    node = node-&gt;next;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>operator*</p>
+<ul>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; T <span class="keyword">operator</span>*()&#123;</span><br><span class="line">        <span class="keyword">return</span> node-&gt;data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="list-中多余出来的节点"><a href="#list-中多余出来的节点" class="headerlink" title="list 中多余出来的节点"></a><strong><em>list</em></strong> 中多余出来的节点</h5><p>如上图所示，呈环状的 <strong><em>list</em></strong> 中存在一个不属于 <strong><em>list</em></strong> 本身的节点，当调用<code>list.end()</code>时返回的 <strong><em>iterator</em></strong> 指向的便是这个节点。</p>
+<p>在 <strong><em>GNUC++ 7.4</em></strong> 版本编译器中；经测试 <code>list.end() == (--list.begin())</code>，这也证实了这一现象；</p>
+<p>不过，按理说这个不在 <strong><em>list</em></strong> 内部的节点所存放的数据、 <strong><em>\</em>prev*</strong> 和 <strong><em>\</em>next*</strong> 应该都为空，但事实上，该节点两根指针又分别指向了 <strong><em>list</em></strong> 的尾首；并且该节点的 <strong><em>data</em></strong> 是有值的，该值为 <strong><em>list</em></strong> 模板参数类型，并且会随着 <strong><em>list</em></strong> 所存储内容变化而变化，暂未发现规律……</p>
+<blockquote>
+<p>这一现象在 <strong><em>GNUC</em></strong> 编译器里究竟代表着什么呢？</p>
+<p><em>阅读源码，未完待续……</em></p>
+</blockquote>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">诗词</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/18/诗词_我耳旁古都的风也疾驰/" class="archive-article-date">
-  	<time datetime="2018-09-17T19:05:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/18/诗词_我耳旁古都的风也疾驰/">我耳旁古都的风也疾驰</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">诗词</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">文章</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">现代诗</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/03/20/诗词_诗人漫步在陌生的黑夜里/" class="archive-article-date">
-  	<time datetime="2018-03-20T10:05:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/03/20/诗词_诗人漫步在陌生的黑夜里/">诗人漫步在陌生的黑夜里</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">诗词</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">C++STL</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">现代诗</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/leftumbrella/leftumbrella.github.io/tree/master/2020/04/29/文章_list/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/03/20/诗词_无题/" class="archive-article-date">
-  	<time datetime="2018-03-20T08:25:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-03-20</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2020/04/28/文章_iterator/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iterator的设计原则</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/03/20/诗词_无题/">无题</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">诗词</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/02/26/诗词_如梦令/" class="archive-article-date">
-  	<time datetime="2018-02-25T19:25:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/02/26/诗词_如梦令/">如梦令</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">诗词</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/02/20/诗词_水龙吟/" class="archive-article-date">
-  	<time datetime="2018-02-20T12:03:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-02-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/02/20/诗词_水龙吟/">水龙吟</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">诗词</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/">&laquo; Prev</a><a class="page-number" href="/archives/">1</a><span class="page-number current">2</span>
-    </nav>
   
 
 
@@ -432,8 +381,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

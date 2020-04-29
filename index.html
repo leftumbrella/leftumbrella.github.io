@@ -156,6 +156,104 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-文章_list" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/29/文章_list/">文章_list</a>
+    </h1>
+  
+
+        
+        <a href="/2020/04/29/文章_list/" class="archive-article-date">
+  	<time datetime="2020-04-29T08:55:22.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p> <strong><em>list</em></strong> 和 <strong><em>vector</em></strong> 一样，也是一种线性数据结构，不同于 <strong><em>vector</em></strong> 的是， <strong><em>list</em></strong> 所占用的内存空间并不是连续的，但它通过各种手段制造出一种连续内存空间的<em>假象</em>； <strong><em>list</em></strong> 因其内部结构的某些特点，在动态操作上能够消耗及其短暂的时间。</p>
+</blockquote>
+<h4 id="list-是由什么构成的？"><a href="#list-是由什么构成的？" class="headerlink" title="list 是由什么构成的？"></a><strong><em>list</em></strong> 是由什么构成的？</h4><p>通常来说，一个 <strong><em>list</em></strong> 类仅需存放一根指向 <strong><em>list node</em></strong> 的指针；表示 <strong><em>list</em></strong> 节点的 <strong><em>list node</em></strong> 中才为应储存的内容。</p>
+<ul>
+<li><p><strong><em>list</em></strong> </p>
+<ul>
+<li><p><strong><em> </em>list node*</strong> —— 指向列表节点的指针</p>
+<ul>
+<li><strong><em> </em>prev[ list node* ]*</strong> —— 指向列表中上一个元素位置的指针</li>
+<li><strong><em> </em>next[ list node* ]*</strong> —— 指向列表中下一个元素位置的指针</li>
+<li><strong><em>data[ T ]</em></strong> —— 列表中存放的数据</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">文章</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">C++STL</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/04/29/文章_list/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-文章_iterator" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -301,7 +399,7 @@
 <p>因此在以上结构下，<code>sizeof(vector)</code> 得出的大小为两个 <code>int</code> 加 一根指针，这一数值在32位电脑上为<code>3*4=12</code>。</p>
 <h4 id="vector-是如何被创建出来的"><a href="#vector-是如何被创建出来的" class="headerlink" title="vector 是如何被创建出来的"></a>vector 是如何被创建出来的</h4><p>以下代码以 <code>copy constructor</code> 函数为例，展示了一个 <code>vector</code> 是如何创建出来的： </p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="built_in">vector</span>(<span class="keyword">const</span> <span class="built_in">vector</span>&lt;T&gt;&amp; v)</span><br><span class="line">	:_capacity(<span class="number">2</span> * v.size()), _size(<span class="number">0</span>) &#123; <span class="comment">//将新 vector 的容量设置为原 vector 长度的两倍</span></span><br><span class="line">	_elem = <span class="keyword">new</span> T[_capacity]; <span class="comment">//开辟内存空间</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">auto</span> i : v) &#123; <span class="comment">//At C++11</span></span><br><span class="line">		_elem[_size++] = i; <span class="comment">//将原 vector 中的元素依次赋值给新 vector</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="vector-的动态空间管理"><a href="#vector-的动态空间管理" class="headerlink" title="vector 的动态空间管理"></a>vector 的动态空间管理</h4><p>在对 <code>vector</code> 进行插入操作的过程中，容器中元素的长度随时有可能超出这个容器的总容量，因此需要在此时进行对<code>vector</code>的扩容操作。</p>
+<h4 id="vector-的动态空间管理"><a href="#vector-的动态空间管理" class="headerlink" title="vector 的动态空间管理"></a>vector 的动态空间管理</h4><p>在对 <code>vector</code> 进行插入操作的过程中，容器中元素的长度随时有可能超出这个容器的总容量，因此需要在此时对<code>vector</code>进行扩容操作。</p>
         
       
 
@@ -908,82 +1006,9 @@
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">C++GP</a>
         		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/03/20/文章_Abort variadic templates/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-诗词_西江月" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/18/诗词_西江月/">西江月</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/18/诗词_西江月/" class="archive-article-date">
-  	<time datetime="2018-11-17T17:11:23.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><br>迟来晓雨无端，恨不任随秋去。</p>
-<p>旧愁借我无归期，飞尽落花几许?</p>
-<p>醉眼高看楼台，东城锦书难寄。</p>
-<p>年少夜寒泪依依，风起吹罢别离。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
+      		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">诗词</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">C++11</a>
         		</li>
       		
 		</ul>
@@ -993,7 +1018,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/18/诗词_西江月/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/03/20/文章_Abort variadic templates/">展开全文 >></a>
         </p>
       
 
@@ -1124,7 +1149,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">C++11</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">STL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">C++STL</a>
               </li>
              
               <li class="article-tag-list-item">
