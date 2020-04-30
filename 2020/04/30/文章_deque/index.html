@@ -20,7 +20,7 @@
 <meta property="og:image" content="https://github.com/2020/04/30/文章_deque/buffer.png">
 <meta property="og:image" content="https://github.com/2020/04/30/文章_deque/buf_map.png">
 <meta property="og:image" content="https://github.com/2020/04/30/文章_deque/iterator.png">
-<meta property="og:updated_time" content="2020-04-30T11:01:06.819Z">
+<meta property="og:updated_time" content="2020-04-30T11:08:46.013Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="deque深度探索">
 <meta name="twitter:description" content="deque 是一种双向开口容器，不同于 stack 与  queue ，数据均可由它的两端进出。  STL 中的 deque 在 STL 中， deque 的具体实现为下图所示：  如上所示， deque 容器是由一个个 buffer 所构成，并且由一条顺序容器buf_map(vector)将其 buffer 串联起来用以记录 buffer 的地址和数量，最后加由 deque iterator">
@@ -207,7 +207,7 @@
 <p>需要注意的是，当 <strong><em>buf_map</em></strong> 也无法满足存储要求(其内部空间已经存满了指向 <strong><em>buffer</em></strong> 的指针)，<strong><em>buf_map</em></strong> 将像正常的 <strong><em>vector</em></strong> 一样进行动态扩容，增长为其原内存的两倍(<em>GNUC</em>)大小；不过，在 <strong><em>vector</em></strong> 成功新开内存将原存储内容移动至新内存的过程中，<strong><em>buf_map</em></strong> 会将原内容尽可能的存贮在新内存的中间位置，以确保在后续 <strong><em>deque</em></strong> 的数据存储过程中<strong>两端均有足够的空间用以增长</strong>。</p>
 <h5 id="deque-中的-iterator"><a href="#deque-中的-iterator" class="headerlink" title="deque 中的 iterator"></a><strong><em>deque</em></strong> 中的 <strong><em>iterator</em></strong></h5><center><br><img src="/2020/04/30/文章_deque/iterator.png" title="iterator内部结构示意图"><br></center>
 
-<p>因 <strong><em>deque</em></strong> 是由一个个 <strong><em>buffer</em></strong> 和 <strong><em>buf_map</em></strong>所拼凑出来的 “连续空间”，所以 <strong><em>deque iterator</em></strong> 的设计显得尤为重要！</p>
+<p>因 <strong><em>deque</em></strong> 是由一个个 <strong><em>buffer</em></strong> 和 <strong><em>buf_map</em></strong> 所拼凑出来的 “连续空间”，所以 <strong><em>deque iterator</em></strong> 的设计显得尤为重要！</p>
 <p>如上图所示，一个 <strong><em>deque iterator</em></strong> 由四部分组成：</p>
 <ul>
 <li>deque iterator<ul>
@@ -222,7 +222,7 @@
 <p><strong><em>cur</em></strong>：<strong>当前 <em>iterator</em> 所指元素</strong>的位置</p>
 <p><strong><em>first</em></strong>：当前 <em>iterator</em> 所指元素 <strong>所在 <em>buffer</em> 的起始位置</strong></p>
 <p><strong><em>last</em></strong>：当前 <em>iterator</em> 所指元素 <strong>所在 <em>buffer</em> 的末尾位置</strong></p>
-<p>而 <strong><em>node</em></strong> 是 <strong>指向该<em>iterator</em>所指元素所在的<em>buffer</em>在<em>buf_map</em>中存储的位置</strong>；</p>
+<p>而 <strong><em>node</em></strong> 是 <strong>指向该 <em>iterator</em> 所指元素所在的 <em>buffer</em> 在 <em>buf_map</em> 中存储的位置</strong>；</p>
 <p>因 <strong><em>buf_map</em></strong> 储存的是指向一个 <strong><em>buffer</em></strong> 的指针(<em>T**),所以 **</em>node<strong><em> 的类型应为 </em></strong>pointer to (pointer to T)<strong>*(T</strong>)。</p>
 <p>在本文章的首图中，以 <strong><em>deque</em></strong> 的两个特殊 <strong><em>iterator</em></strong>(<strong><em>start &amp; finish</em></strong>) 为例子：</p>
 <p><strong><em>start</em></strong> 中 <strong><em>cur</em></strong> 指向 <strong><em>deque</em></strong> 容器第一个元素；<strong><em>first</em></strong> 指向 <strong><em>deque</em></strong> 容器中第一个 <strong><em>buffer</em></strong>的开始 ，这也是 <strong><em>buf_map</em></strong> 中存储的第一根指针指向的位置；<strong><em>end</em></strong> 指向 <strong><em>deque</em></strong> 容器中第一个 <strong><em>buffer</em></strong> 的结束；<strong><em>node</em></strong> 指向 <strong><em>buf_map[0]</em></strong>。</p>
@@ -458,14 +458,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">C++GP</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">C++11</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">C++STL</a>
               </li>
              
@@ -474,7 +466,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">C++GP</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">C++11</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">STL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">诗词</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -483,10 +487,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">相片</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">诗词</a>
               </li>
              
               <li class="article-tag-list-item">
