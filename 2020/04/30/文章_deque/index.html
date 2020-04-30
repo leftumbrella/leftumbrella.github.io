@@ -6,15 +6,25 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <link rel="dns-prefetch" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/master">
-  <title>Tag: C++11 | 左手撑伞的博客</title>
+  <title>deque深度探索 | 左手撑伞的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="左手撑伞的博客">
-<meta property="og:url" content="https://github.com/leftumbrella/leftumbrella.github.io/tree/master/tags/C-11/index.html">
+  <meta name="description" content="deque 是一种双向开口容器，不同于 stack 与  queue ，数据均可由它的两端进出。  STL 中的 deque 在 STL 中， deque 的具体实现为下图所示：  如上所示， deque 容器是由一个个 buffer 所构成，并且由一条顺序容器buf_map(vector)将其 buffer 串联起来用以记录 buffer 的地址和数量，最后加由 deque iterator">
+<meta name="keywords" content="文章,C++STL,数据结构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="deque深度探索">
+<meta property="og:url" content="https://github.com/leftumbrella/leftumbrella.github.io/tree/master/2020/04/30/文章_deque/index.html">
 <meta property="og:site_name" content="左手撑伞的博客">
+<meta property="og:description" content="deque 是一种双向开口容器，不同于 stack 与  queue ，数据均可由它的两端进出。  STL 中的 deque 在 STL 中， deque 的具体实现为下图所示：  如上所示， deque 容器是由一个个 buffer 所构成，并且由一条顺序容器buf_map(vector)将其 buffer 串联起来用以记录 buffer 的地址和数量，最后加由 deque iterator">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://github.com/2020/04/30/文章_deque/deque.png">
+<meta property="og:image" content="https://github.com/2020/04/30/文章_deque/buffer.png">
+<meta property="og:image" content="https://github.com/2020/04/30/文章_deque/buf_map.png">
+<meta property="og:image" content="https://github.com/2020/04/30/文章_deque/iterator.png">
+<meta property="og:updated_time" content="2020-04-30T11:01:06.819Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="左手撑伞的博客">
+<meta name="twitter:title" content="deque深度探索">
+<meta name="twitter:description" content="deque 是一种双向开口容器，不同于 stack 与  queue ，数据均可由它的两端进出。  STL 中的 deque 在 STL 中， deque 的具体实现为下图所示：  如上所示， deque 容器是由一个个 buffer 所构成，并且由一条顺序容器buf_map(vector)将其 buffer 串联起来用以记录 buffer 的地址和数量，最后加由 deque iterator">
+<meta name="twitter:image" content="https://github.com/2020/04/30/文章_deque/deque.png">
   
     <link rel="alternative" href="/atom.xml" title="左手撑伞的博客" type="application/atom+xml">
   
@@ -154,36 +164,89 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-文章_deque" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/03/20/文章_Abort variadic templates/" class="archive-article-date">
-  	<time datetime="2019-03-20T10:05:50.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-20</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/03/20/文章_Abort variadic templates/">C++11 之 Variadic Templates(数量不定的模板参数)</a>
+    <h1 class="article-title" itemprop="name">
+      deque深度探索
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2020/04/30/文章_deque/" class="archive-article-date">
+  	<time datetime="2020-04-30T07:47:48.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p> <strong><em>deque</em></strong> 是一种双向开口容器，不同于 <strong><em>stack</em></strong> 与  <strong><em>queue</em></strong> ，数据均可由它的两端进出。</p>
+</blockquote>
+<h4 id="STL-中的-deque"><a href="#STL-中的-deque" class="headerlink" title="STL 中的 deque"></a>STL 中的 <strong><em>deque</em></strong></h4><blockquote>
+<p>在 STL 中， <strong><em>deque</em></strong> 的具体实现为下图所示：</p>
+</blockquote>
+<center><br><img src="/2020/04/30/文章_deque/deque.png" title="deque内部结构示意图"><br></center><br>如上所示， <strong><em>deque</em></strong> 容器是由一个个 <strong><em>buffer</em></strong> 所构成，并且由一条顺序容器buf_map(<strong><em>vector</em></strong>)将其 <strong><em>buffer</em></strong> 串联起来用以记录 <strong><em>buffer</em></strong> 的地址和数量，最后加由 <strong><em>deque iterator</em></strong> 以构成连续空间的假象——<br><br><a id="more"></a><br><br>- deque<br>  - buffer<br>  - buf_map<br>  - iterator<br><br>其中 <strong><em>buffer</em></strong> 就是一段连续内存，<strong><em>buf_map</em></strong> 将决定 <strong><em>buffer</em></strong> 们在 <strong><em>deque</em></strong> 中的先后顺序。<br><br>#####  <strong><em>deque</em></strong> 中的 <strong><em>buffer</em></strong><br><br><center><br><img src="/2020/04/30/文章_deque/buffer.png" title="buffer内部结构示意图"><br></center>
+
+<p><strong><em>buffer</em></strong> 是一组固定大小的序列，其中存放着 <strong><em>deque</em></strong> 应该储存的数据；</p>
+<p>每一个 <strong><em>buffer</em></strong> 的长度由所存数据的大小决定——</p>
+<p>在 GNUC 编译器中，一个 <strong><em>buffer</em></strong> 的长度是：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">buffer_size = <span class="keyword">sizeof</span>(T) &gt; <span class="number">512</span> ? <span class="number">1</span> : <span class="number">512</span> / <span class="keyword">sizeof</span>(T);</span><br></pre></td></tr></table></figure>
+<p>当所存数据的大小超过 512 字节时，仅将一个 <strong><em>buffer</em></strong> 的长度设置为 1，否则将其设为 512/sizeof(T) ,例如当 <strong><em>deque</em></strong> 容器所储存数据类型为 <strong><em>int(sizeof=4)</em></strong> 时，那么一个 <strong><em>buffer</em></strong> 应当存放 128 个数据。</p>
+<h5 id="deque-中的-buf-map"><a href="#deque-中的-buf-map" class="headerlink" title="deque 中的 buf_map"></a><strong><em>deque</em></strong> 中的 <strong><em>buf_map</em></strong></h5><center><br><img src="/2020/04/30/文章_deque/buf_map.png" title="buf_map内部结构示意图"><br></center>
+
+<p><strong><em>buf_map</em></strong> 是用于记录上述 <strong><em>buffer</em></strong> 所在位置的表，具体实现为 <strong><em>vertor</em></strong> ；</p>
+<p>此 <strong><em>vector</em></strong> 中的每一个每一个值都储存着一个指针，用以指向每一个 <strong><em>buffer</em></strong> 的起点。</p>
+<p>该 <strong><em>buf_map</em></strong> 中第一个指针指向 <strong><em>deque</em></strong> 中元素所占据第一个 <strong><em>buffer</em></strong> 的首位值。<strong><em>buf_map</em></strong> 中指针指向的地址是与 <strong><em>deque</em></strong> 所存储数据的空间无关的，<strong><em>buf_map</em></strong> 主要也是唯一的作用仅是用以记录组成 <strong><em>deque</em></strong> 容器中的 <strong><em>buffer</em></strong>。</p>
+<p>因而 <strong><em>buf_map</em></strong> 中所存储的指针数目即为 <strong><em>deque</em></strong> 容器中 <strong><em>buffer</em></strong> 的个数(<em>map_size</em>)。</p>
+<p>当使用者将数据不断存储到 <strong><em>deque</em></strong> 的过程中，若某一 <strong><em>buffer</em></strong> 即将不能满足储存要求(存满了)， <strong><em>deque</em></strong> 将会开辟出一块新的内存空间作为新 <strong><em>buffer</em></strong> 并将其地址储存为 <strong><em>buf_map</em></strong> 的新元素。</p>
+<p>需要注意的是，当 <strong><em>buf_map</em></strong> 也无法满足存储要求(其内部空间已经存满了指向 <strong><em>buffer</em></strong> 的指针)，<strong><em>buf_map</em></strong> 将像正常的 <strong><em>vector</em></strong> 一样进行动态扩容，增长为其原内存的两倍(<em>GNUC</em>)大小；不过，在 <strong><em>vector</em></strong> 成功新开内存将原存储内容移动至新内存的过程中，<strong><em>buf_map</em></strong> 会将原内容尽可能的存贮在新内存的中间位置，以确保在后续 <strong><em>deque</em></strong> 的数据存储过程中<strong>两端均有足够的空间用以增长</strong>。</p>
+<h5 id="deque-中的-iterator"><a href="#deque-中的-iterator" class="headerlink" title="deque 中的 iterator"></a><strong><em>deque</em></strong> 中的 <strong><em>iterator</em></strong></h5><center><br><img src="/2020/04/30/文章_deque/iterator.png" title="iterator内部结构示意图"><br></center>
+
+<p>因 <strong><em>deque</em></strong> 是由一个个 <strong><em>buffer</em></strong> 和 <strong><em>buf_map</em></strong>所拼凑出来的 “连续空间”，所以 <strong><em>deque iterator</em></strong> 的设计显得尤为重要！</p>
+<p>如上图所示，一个 <strong><em>deque iterator</em></strong> 由四部分组成：</p>
+<ul>
+<li>deque iterator<ul>
+<li>cur[T*]</li>
+<li>first[T*]</li>
+<li>last[T*]</li>
+<li>node[T**]</li>
+</ul>
+</li>
+</ul>
+<p>其中 <strong><em>cur</em></strong>、<strong><em>first</em></strong> 和 <strong><em>last</em></strong> 均为指向所存储数据类型的指针，分别指向——</p>
+<p><strong><em>cur</em></strong>：<strong>当前 <em>iterator</em> 所指元素</strong>的位置</p>
+<p><strong><em>first</em></strong>：当前 <em>iterator</em> 所指元素 <strong>所在 <em>buffer</em> 的起始位置</strong></p>
+<p><strong><em>last</em></strong>：当前 <em>iterator</em> 所指元素 <strong>所在 <em>buffer</em> 的末尾位置</strong></p>
+<p>而 <strong><em>node</em></strong> 是 <strong>指向该<em>iterator</em>所指元素所在的<em>buffer</em>在<em>buf_map</em>中存储的位置</strong>；</p>
+<p>因 <strong><em>buf_map</em></strong> 储存的是指向一个 <strong><em>buffer</em></strong> 的指针(<em>T**),所以 **</em>node<strong><em> 的类型应为 </em></strong>pointer to (pointer to T)<strong>*(T</strong>)。</p>
+<p>在本文章的首图中，以 <strong><em>deque</em></strong> 的两个特殊 <strong><em>iterator</em></strong>(<strong><em>start &amp; finish</em></strong>) 为例子：</p>
+<p><strong><em>start</em></strong> 中 <strong><em>cur</em></strong> 指向 <strong><em>deque</em></strong> 容器第一个元素；<strong><em>first</em></strong> 指向 <strong><em>deque</em></strong> 容器中第一个 <strong><em>buffer</em></strong>的开始 ，这也是 <strong><em>buf_map</em></strong> 中存储的第一根指针指向的位置；<strong><em>end</em></strong> 指向 <strong><em>deque</em></strong> 容器中第一个 <strong><em>buffer</em></strong> 的结束；<strong><em>node</em></strong> 指向 <strong><em>buf_map[0]</em></strong>。</p>
+<p><strong><em>finish</em></strong> 中 <strong><em>cur</em></strong> 指向 <strong><em>deque</em></strong> 容器最后一个元素的下一个元素的位置(<em>deque.end()</em>)，首图恰好展示了一个特殊情况—— <strong><em>deque</em></strong> 中的数据恰好占据完一整个 <strong><em>buffer</em></strong>，因此 <strong><em>deque</em></strong> 重新开辟出一块 <strong><em>buffer</em></strong>，所以自然 <strong><em>first</em></strong> 指向这个新 <strong><em>buffer</em></strong> ；<strong><em>end</em></strong> 指向此 <strong><em>buffer</em></strong> 的结束；<strong><em>node</em></strong> 指向 <strong><em>buf_map[buf_map.size()-1]</em></strong>。</p>
+<h6 id="deque-iterator-中的运算符重载"><a href="#deque-iterator-中的运算符重载" class="headerlink" title="deque iterator 中的运算符重载"></a><strong><em>deque iterator</em></strong> 中的运算符重载</h6><p>为了模拟连续空间， <strong><em>deque iterator</em></strong> 针对寻常指针可操作的部分运算符进行了重载以支持相关操作：</p>
+<blockquote>
+<p>以下代码皆为简化版本，仅表达内部逻辑，实际操作中应遵循设计规则，参数类型等可能需要调整</p>
+</blockquote>
+<p><strong><em>operator++</em></strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="built_in">deque</span>&lt;T&gt;::iterator <span class="keyword">operator</span>++()&#123;</span><br><span class="line">    ++node; <span class="comment">//将 iterator 中指向元素的指针移动至下一个</span></span><br><span class="line">    <span class="keyword">if</span>(cur==last)&#123; <span class="comment">//如果此时移动至了此 buffer 的末尾</span></span><br><span class="line">        ++node; <span class="comment">//将指向 buf_map 某位置的指针移动至下一个以定位到下一个 buffer</span></span><br><span class="line">        cur = first = *node; <span class="comment">//将新 buffer 的首元素地址赋值给 cur 和 first</span></span><br><span class="line">        last = first+buf_size; <span class="comment">//将 last 指针设置为新 buffer 的结尾(first+一个buffer容纳的数量)</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><em>operator+=</em></strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="built_in">deque</span>&lt;T&gt;::iterator <span class="keyword">operator</span>+=(<span class="keyword">int</span> n)&#123;</span><br><span class="line">    <span class="keyword">int</span> skip_num = n + (cur-first); <span class="comment">//加上该元素当前所在buffer之前的所有数量</span></span><br><span class="line">    <span class="keyword">if</span>(skip_num&gt;=<span class="number">0</span> &amp;&amp; skip_num&lt;buf_size)&#123; <span class="comment">//此时若加上 n 是否还在本 buffer 内(考虑n为负数)</span></span><br><span class="line">        cur +=n ;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">int</span> buf_skip_num = skip_num&gt;<span class="number">0</span> ? skip_snum/buf_size <span class="comment">//若n为正数,该+=操作应跳跃的buffer数目</span></span><br><span class="line">            : -((skip_num/buf_size)+<span class="number">1</span>); <span class="comment">//若n为负数,该+=操作应跳跃的buffer数目</span></span><br><span class="line">        node += buf_skip_num; <span class="comment">//将指向 buf_map 某位置的指针移动至下一个以定位到+=操作后iterator应指向位置所在的 buffer</span></span><br><span class="line">        first = node; <span class="comment">//重设first</span></span><br><span class="line">        last = first+buf_size; <span class="comment">//重设last</span></span><br><span class="line">        cur = first + (skip_num - buf_skip_num*buf_size ); <span class="comment">//将所cur指针移动至+=操作后在该buffer内应指向的位置</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong><em>operator-</em></strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="keyword">int</span> <span class="keyword">operator</span>-(<span class="built_in">deque</span>&lt;T&gt;::iterator n)&#123;</span><br><span class="line">    <span class="comment">//(node - n.node - 1)为两iterator之间间隔的buffer数目</span></span><br><span class="line">    <span class="comment">//(cur - first)为当前iterator所指元素到所处buffer结尾的元素数目</span></span><br><span class="line">    <span class="comment">//(n.last - n.cur)为减号后iterator所指元素到所处buffer起始的元素数目</span></span><br><span class="line">    <span class="keyword">return</span> buf_size * (node - n.node - <span class="number">1</span>) + (cur - first) + (n.last - n.cur);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>operator*</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">T&amp; <span class="keyword">operator</span>*()&#123;</span><br><span class="line">    <span class="keyword">return</span> *cur;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -193,29 +256,116 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">C++GP</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">C++STL</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">C++11</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=https://github.com/leftumbrella/leftumbrella.github.io/tree/master/2020/04/30/文章_deque/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2020/04/29/文章_list/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">list深度探索</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -238,9 +388,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
