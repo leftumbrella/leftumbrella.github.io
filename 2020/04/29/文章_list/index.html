@@ -17,7 +17,7 @@
 <meta property="og:description" content="list 和 vector 一样，也是一种线性数据结构，不同于 vector 的是， list 所占用的内存空间并不是连续的，但它通过各种手段制造出一种连续内存空间的假象； list 因其内部结构的某些特点，在动态操作上能够消耗及其短暂的时间。  list 是由什么构成的？通常来说，一个 list 类仅需存放一根指向 list node 的指针；表示 list 节点的 list node 中才">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://github.com/2020/04/29/文章_list/list.png">
-<meta property="og:updated_time" content="2020-04-29T11:12:59.740Z">
+<meta property="og:updated_time" content="2020-05-05T12:56:51.810Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="list深度探索">
 <meta name="twitter:description" content="list 和 vector 一样，也是一种线性数据结构，不同于 vector 的是， list 所占用的内存空间并不是连续的，但它通过各种手段制造出一种连续内存空间的假象； list 因其内部结构的某些特点，在动态操作上能够消耗及其短暂的时间。  list 是由什么构成的？通常来说，一个 list 类仅需存放一根指向 list node 的指针；表示 list 节点的 list node 中才">
@@ -214,7 +214,7 @@
 <ul>
 <li><p>operator++</p>
 <ul>
-<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; list_iterator&lt;T&gt;&amp; <span class="keyword">operator</span>++()&#123;</span><br><span class="line">    node = node-&gt;next;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<li><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; list_iterator&lt;T&gt;&amp; <span class="keyword">operator</span>++()&#123;</span><br><span class="line">    node = node-&gt;next;</span><br><span class="line">    <span class="keyword">return</span> *<span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 </li>
@@ -480,15 +480,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">相片</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">诗词</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">C++OOP</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">相片</a>
               </li>
              
               <li class="article-tag-list-item">
