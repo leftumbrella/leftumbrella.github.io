@@ -962,33 +962,26 @@
 
 
   
-    <article id="post-文章_vptr and vtab" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-文章_const-member-fun" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/03/23/文章_vptr and vtab/">C++ 面向对象之 virtual pointer 和 virtual tab</a>
+      <a class="article-title" href="/2020/01/01/文章_const-member-fun/">const见微知著</a>
     </h1>
   
 
         
-        <a href="/2019/03/23/文章_vptr and vtab/" class="archive-article-date">
-  	<time datetime="2019-03-23T07:30:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-23</time>
+        <a href="/2020/01/01/文章_const-member-fun/" class="archive-article-date">
+  	<time datetime="2020-01-01T10:47:17.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-01-01</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <blockquote>
-<p><em>在下文中：</em><br><br> <em>vptr == virtual pointer == (虚指针)</em> <br><br> <em>vtab == virtual table == (虚表)</em></p>
-</blockquote>
-<h2 id="Part-1"><a href="#Part-1" class="headerlink" title="Part 1:"></a>Part 1:</h2><blockquote>
-<p>多态</p>
-</blockquote>
-<p>当一个类中存在虚函数时， <strong>这个类的大小会比数据本身多一个指针的空间</strong> 。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">class A&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void fun1()&#123;&#125;</span><br><span class="line">    virtual void fun2()&#123;&#125;</span><br><span class="line">    void fun3()&#123;&#125;</span><br><span class="line">    void fun4()&#123;&#125;</span><br><span class="line">private:</span><br><span class="line">    int a,b,c;</span><br><span class="line">&#125;;</span><br><span class="line">class B : public A&#123;</span><br><span class="line">public:</span><br><span class="line">    virtual void fun1()&#123;&#125;</span><br><span class="line">    void bFun()&#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line">class C&#123;</span><br><span class="line">public:</span><br><span class="line">    void cFun1()&#123;&#125;</span><br><span class="line">    void cFun2()&#123;&#125;</span><br><span class="line">    void cFun3()&#123;&#125;</span><br><span class="line">private:</span><br><span class="line">    int a,b,c;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
         
       
 
@@ -1006,7 +999,7 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">C++OOP</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">C++lang</a>
         		</li>
       		
 		</ul>
@@ -1016,7 +1009,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/03/23/文章_vptr and vtab/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/01/01/文章_const-member-fun/">展开全文 >></a>
         </p>
       
 
@@ -1143,6 +1136,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">C++lang</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">C++STL</a>
               </li>
              
@@ -1163,10 +1160,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">相片</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">诗词</a>
               </li>
              
@@ -1176,6 +1169,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">现代诗</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">相片</a>
               </li>
             
             <div class="clearfix"></div>
