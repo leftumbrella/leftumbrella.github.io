@@ -1,7 +1,8 @@
 ---
 title: vector深度探索
 date: 2020-04-28 14:43:26
-tags: [文章,STL,数据结构]
+tags: [STL,数据结构]
+categories: 文章
 ---
 
 > vector 算是一种可扩充的`array`，用于储存它的内存与`array`一样，总是连续的。

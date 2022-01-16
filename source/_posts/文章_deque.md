@@ -1,7 +1,8 @@
 ---
 title: deque深度探索
 date: 2020-04-30 15:47:48
-tags: [文章,STL,数据结构]
+tags: [C++,STL,数据结构]
+categories: 文章
 ---
 
 >  ***deque*** 是一种双向开口容器，不同于 ***stack*** 与  ***queue*** ，数据均可由它的两端进出。

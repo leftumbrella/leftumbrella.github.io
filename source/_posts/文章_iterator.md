@@ -1,8 +1,8 @@
 ---
 title: iterator的设计原则
 date: 2020-04-28 17:51:45
-tags: [文章,STL]
-
+tags: [C++,STL]
+categories: 文章
 ---
 
 > 在 STL 中，`iterator` 是容器和算法之间的桥梁，`iterator`   必须满足算法所需要得知的相关内容方能使容器能够正常使用算法来进行一系列操作。

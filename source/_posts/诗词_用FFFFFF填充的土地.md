@@ -1,8 +1,8 @@
 ---
 title: 数字无题
 date: 2021-1-20 00:06:50
-tags: [诗词,现代诗]
-
+tags: 现代诗
+categories: 诗词
 ---
 
 <br>用#FFFFFF填充的土地

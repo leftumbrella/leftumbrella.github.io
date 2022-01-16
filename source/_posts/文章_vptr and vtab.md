@@ -1,7 +1,8 @@
 ---
 title: C++ 面向对象之 virtual pointer 和 virtual tab
 date: 2019-3-23 15:30:25
-tags: [文章,C++OOP]
+tags: C++
+categories: 文章
 ---
 
 >*在下文中：*<br>

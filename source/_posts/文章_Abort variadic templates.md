@@ -1,7 +1,8 @@
 ---
 title: C++11 之 Variadic Templates(数量不定的模板参数)
 date: 2019-3-20 18:05:50
-tags: [文章,C++GP,C++11]
+tags: [泛型编程,C++11,C++]
+categories: 文章
 ---
 
 
