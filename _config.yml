@@ -13,7 +13,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://github.com/leftumbrella/leftumbrella.github.io
+url: https://github.com/leftumbrella/leftumbrella.github.io/tree/blog
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -81,7 +81,7 @@ theme: next
 deploy:
   type: git
   repo: https://github.com/leftumbrella/leftumbrella.github.io
-  branch: main
+  branch: blog
 jsonContent:
     meta: false
     pages: false
