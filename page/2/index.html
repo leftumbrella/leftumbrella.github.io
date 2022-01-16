@@ -160,6 +160,462 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2020/04/28/%E6%96%87%E7%AB%A0_vector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Avatar.jpg">
+      <meta itemprop="name" content="左手撑伞">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="左手撑伞的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/28/%E6%96%87%E7%AB%A0_vector/" class="post-title-link" itemprop="url">vector深度探索</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-28 14:43:26" itemprop="dateCreated datePublished" datetime="2020-04-28T14:43:26+08:00">2020-04-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%96%87%E7%AB%A0/" itemprop="url" rel="index"><span itemprop="name">文章</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p>vector 算是一种可扩充的<code>array</code>，用于储存它的内存与<code>array</code>一样，总是连续的。</p>
+</blockquote>
+<h4 id="一个-vector-的内部结构可能是什么样子？"><a href="#一个-vector-的内部结构可能是什么样子？" class="headerlink" title="一个 vector 的内部结构可能是什么样子？"></a>一个 vector 的内部结构可能是什么样子？</h4><ul>
+<li><p><code>vector</code></p>
+<ul>
+<li><p><code>size[int]</code>——长度</p>
+</li>
+<li><p><code>capacity[int]</code>——容量</p>
+</li>
+<li><p><code>data[T*]</code>——数据项</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>如上所示，我们可以直接创建包含以上三个属性的<code>vector</code>类，其中<code>size</code>用以表示<code>vector</code>的长度，它可以是<code>int</code>型，<code>capacity</code>同理，它用来表示<code>vector</code>现在所有开辟出的内存空间的大小，而<code>data</code>自然为 <strong><em>指向模板参数类型的指针</em></strong>。</p>
+<p>因此在以上结构下，<code>sizeof(vector)</code> 得出的大小为两个 <code>int</code> 加 一根指针，这一数值在32位电脑上为<code>3*4=12</code>。</p>
+<h4 id="vector-是如何被创建出来的"><a href="#vector-是如何被创建出来的" class="headerlink" title="vector 是如何被创建出来的"></a>vector 是如何被创建出来的</h4><p>以下代码以 <code>copy constructor</code> 函数为例，展示了一个 <code>vector</code> 是如何创建出来的： </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt; <span class="built_in">vector</span>(<span class="keyword">const</span> vector&lt;T&gt;&amp; v)</span><br><span class="line">	:_capacity(<span class="number">2</span> * v.<span class="built_in">size</span>()), _size(<span class="number">0</span>) &#123; <span class="comment">//将新 vector 的容量设置为原 vector 长度的两倍</span></span><br><span class="line">	_elem = <span class="keyword">new</span> T[_capacity]; <span class="comment">//开辟内存空间</span></span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">auto</span> i : v) &#123; <span class="comment">//At C++11</span></span><br><span class="line">		_elem[_size++] = i; <span class="comment">//将原 vector 中的元素依次赋值给新 vector</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="vector-的动态空间管理"><a href="#vector-的动态空间管理" class="headerlink" title="vector 的动态空间管理"></a>vector 的动态空间管理</h4><p>在对 <code>vector</code> 进行插入操作的过程中，容器中元素的长度随时有可能超出这个容器的总容量，因此需要在此时对<code>vector</code>进行扩容操作。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/28/%E6%96%87%E7%AB%A0_vector/#more" rel="contents">
+                展开全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2020/04/27/%E7%9B%B8%E7%89%87_%E8%A5%BF%E5%AE%89%E5%9F%8E%E5%A2%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Avatar.jpg">
+      <meta itemprop="name" content="左手撑伞">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="左手撑伞的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/27/%E7%9B%B8%E7%89%87_%E8%A5%BF%E5%AE%89%E5%9F%8E%E5%A2%99/" class="post-title-link" itemprop="url">在城墙上看西安</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-27 18:03:22" itemprop="dateCreated datePublished" datetime="2020-04-27T18:03:22+08:00">2020-04-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%9B%B8%E7%89%87/" itemprop="url" rel="index"><span itemprop="name">相片</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <center><br><img src="/2020/04/27/%E7%9B%B8%E7%89%87_%E8%A5%BF%E5%AE%89%E5%9F%8E%E5%A2%99/1.jpg" class title="北大街上"><br></center><br>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/27/%E7%9B%B8%E7%89%87_%E8%A5%BF%E5%AE%89%E5%9F%8E%E5%A2%99/#more" rel="contents">
+                展开全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2020/04/19/%E8%AF%97%E8%AF%8D_%E6%B2%89%E9%BB%98%E7%9A%84%E4%B8%80%E4%B8%87%E7%A7%8D%E8%A1%A8%E8%BE%BE%E6%96%B9%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Avatar.jpg">
+      <meta itemprop="name" content="左手撑伞">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="左手撑伞的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/19/%E8%AF%97%E8%AF%8D_%E6%B2%89%E9%BB%98%E7%9A%84%E4%B8%80%E4%B8%87%E7%A7%8D%E8%A1%A8%E8%BE%BE%E6%96%B9%E5%BC%8F/" class="post-title-link" itemprop="url">沉默的一万种表达方式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-19 19:56:50" itemprop="dateCreated datePublished" datetime="2020-04-19T19:56:50+08:00">2020-04-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><br>红色车灯、黑色的夜<br>我的眼睛因此而朦胧<br>它看见光在人的身上穿行<br>看见前路漫漫、声音嘈杂</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/19/%E8%AF%97%E8%AF%8D_%E6%B2%89%E9%BB%98%E7%9A%84%E4%B8%80%E4%B8%87%E7%A7%8D%E8%A1%A8%E8%BE%BE%E6%96%B9%E5%BC%8F/#more" rel="contents">
+                展开全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2020/03/26/%E8%AF%97%E8%AF%8D_%E5%B9%BF%E8%A2%A4%E6%97%A0%E5%9E%A0%E7%9A%84%E5%85%AC%E4%BA%A4%E8%BD%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Avatar.jpg">
+      <meta itemprop="name" content="左手撑伞">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="左手撑伞的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/26/%E8%AF%97%E8%AF%8D_%E5%B9%BF%E8%A2%A4%E6%97%A0%E5%9E%A0%E7%9A%84%E5%85%AC%E4%BA%A4%E8%BD%A6/" class="post-title-link" itemprop="url">广袤无垠的公交车</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-26 20:14:50" itemprop="dateCreated datePublished" datetime="2020-03-26T20:14:50+08:00">2020-03-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><br>师傅在前面划<br>我坐在窗边看海<br>我们不交谈<br>海便一言不发<br>乘着广袤无垠的公交车<br>去航行</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2020/03/26/%E8%AF%97%E8%AF%8D_%E9%BB%84%E7%BA%BF%E4%BB%A5%E5%86%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Avatar.jpg">
+      <meta itemprop="name" content="左手撑伞">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="左手撑伞的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/26/%E8%AF%97%E8%AF%8D_%E9%BB%84%E7%BA%BF%E4%BB%A5%E5%86%85/" class="post-title-link" itemprop="url">黄线以内</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-26 19:40:50" itemprop="dateCreated datePublished" datetime="2020-03-26T19:40:50+08:00">2020-03-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><br>红色鞋子立起来的身躯<br>与未下车我的灵魂一道<br>在黄线以内等</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/26/%E8%AF%97%E8%AF%8D_%E9%BB%84%E7%BA%BF%E4%BB%A5%E5%86%85/#more" rel="contents">
+                展开全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2020/03/21/%E8%AF%97%E8%AF%8D_%E7%99%BD%E4%BA%91%E5%8F%A6%E4%B8%80%E8%BE%B9%E7%9A%84%E7%99%BD%E4%BA%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Avatar.jpg">
+      <meta itemprop="name" content="左手撑伞">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="左手撑伞的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/21/%E8%AF%97%E8%AF%8D_%E7%99%BD%E4%BA%91%E5%8F%A6%E4%B8%80%E8%BE%B9%E7%9A%84%E7%99%BD%E4%BA%91/" class="post-title-link" itemprop="url">白云另一边的白云</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-21 20:58:50" itemprop="dateCreated datePublished" datetime="2020-03-21T20:58:50+08:00">2020-03-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><br>白云另一边的白云<br>与它一同分割开黑夜<br>我和我臆想里的此刻<br>共同拥有一整个过去</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/21/%E8%AF%97%E8%AF%8D_%E7%99%BD%E4%BA%91%E5%8F%A6%E4%B8%80%E8%BE%B9%E7%9A%84%E7%99%BD%E4%BA%91/#more" rel="contents">
+                展开全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2020/01/01/%E6%96%87%E7%AB%A0_const-member-fun/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -451,447 +907,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2018/11/18/%E8%AF%97%E8%AF%8D_%E8%A5%BF%E6%B1%9F%E6%9C%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Avatar.jpg">
-      <meta itemprop="name" content="左手撑伞">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="左手撑伞的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/11/18/%E8%AF%97%E8%AF%8D_%E8%A5%BF%E6%B1%9F%E6%9C%88/" class="post-title-link" itemprop="url">西江月</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-11-18 01:11:23" itemprop="dateCreated datePublished" datetime="2018-11-18T01:11:23+08:00">2018-11-18</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><br>迟来晓雨无端，恨不任随秋去。</p>
-<p>旧愁借我无归期，飞尽落花几许?</p>
-<p>醉眼高看楼台，东城锦书难寄。</p>
-<p>年少夜寒泪依依，风起吹罢别离。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2018/09/18/%E8%AF%97%E8%AF%8D_%E6%88%91%E8%80%B3%E6%97%81%E5%8F%A4%E9%83%BD%E7%9A%84%E9%A3%8E%E4%B9%9F%E7%96%BE%E9%A9%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Avatar.jpg">
-      <meta itemprop="name" content="左手撑伞">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="左手撑伞的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/09/18/%E8%AF%97%E8%AF%8D_%E6%88%91%E8%80%B3%E6%97%81%E5%8F%A4%E9%83%BD%E7%9A%84%E9%A3%8E%E4%B9%9F%E7%96%BE%E9%A9%B0/" class="post-title-link" itemprop="url">我耳旁古都的风也疾驰</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-09-18 03:05:50" itemprop="dateCreated datePublished" datetime="2018-09-18T03:05:50+08:00">2018-09-18</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><br>我耳旁古都的风也疾驰</p>
-<p>看见树在落叶</p>
-<p>人在往返</p>
-<p>从前旧的巷道里</p>
-<p>有白蝴蝶飞过的气味</p>
-<p>有风筝和嘈杂的光</p>
-<p>可熙攘碰撞我的身躯</p>
-<p>是在追逐你的影子</p>
-<p>还是追逐谁的孤独</p>
-<p>不是我的孤独</p>
-<h6 id="At-XI-AN-写于西安"><a href="#At-XI-AN-写于西安" class="headerlink" title="At XI`AN 写于西安"></a>At XI`AN 写于西安</h6>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2018/03/20/%E8%AF%97%E8%AF%8D_%E8%AF%97%E4%BA%BA%E6%BC%AB%E6%AD%A5%E5%9C%A8%E9%99%8C%E7%94%9F%E7%9A%84%E9%BB%91%E5%A4%9C%E9%87%8C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Avatar.jpg">
-      <meta itemprop="name" content="左手撑伞">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="左手撑伞的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/03/20/%E8%AF%97%E8%AF%8D_%E8%AF%97%E4%BA%BA%E6%BC%AB%E6%AD%A5%E5%9C%A8%E9%99%8C%E7%94%9F%E7%9A%84%E9%BB%91%E5%A4%9C%E9%87%8C/" class="post-title-link" itemprop="url">诗人漫步在陌生的黑夜里</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-03-20 18:05:50" itemprop="dateCreated datePublished" datetime="2018-03-20T18:05:50+08:00">2018-03-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><br>诗人漫步在陌生的黑夜里</p>
-<p>凝望着触不可及没有星的空</p>
-<p>他想写这黑夜</p>
-<p>却不知如何写你</p>
-<p>月光中悠悠而过的别处微风</p>
-<p>以为轻拂着你的面颊</p>
-<p>倒映在无人的窗棂上</p>
-<p>又徘徊，又飞舞</p>
-<p>风在风里摇曳</p>
-<p>我在哪里飘零</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2018/03/20/%E8%AF%97%E8%AF%8D_%E6%97%A0%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Avatar.jpg">
-      <meta itemprop="name" content="左手撑伞">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="左手撑伞的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/03/20/%E8%AF%97%E8%AF%8D_%E6%97%A0%E9%A2%98/" class="post-title-link" itemprop="url">无题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-03-20 16:25:50" itemprop="dateCreated datePublished" datetime="2018-03-20T16:25:50+08:00">2018-03-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><br>寂寞五更无梦夜</p>
-<p>人倚楼台，风雨正飘摇。  </p>
-<p>相似欲把春愁借。  </p>
-<p>画船东访，憔悴自西流。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2018/02/26/%E8%AF%97%E8%AF%8D_%E5%A6%82%E6%A2%A6%E4%BB%A4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Avatar.jpg">
-      <meta itemprop="name" content="左手撑伞">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="左手撑伞的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/02/26/%E8%AF%97%E8%AF%8D_%E5%A6%82%E6%A2%A6%E4%BB%A4/" class="post-title-link" itemprop="url">如梦令</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-02-26 03:25:50" itemprop="dateCreated datePublished" datetime="2018-02-26T03:25:50+08:00">2018-02-26</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><br>经年不返愁别，轻语诉梦思灭。 </p>
-<p>雪散漫漫舞，飞上眉梢花谢。  </p>
-<p>孤夜。孤夜。  </p>
-<p>才登佳人楼阙。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://github.com/leftumbrella/leftumbrella.github.io/tree/blog/2018/02/20/%E8%AF%97%E8%AF%8D_%E6%B0%B4%E9%BE%99%E5%90%9F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/Avatar.jpg">
-      <meta itemprop="name" content="左手撑伞">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="左手撑伞的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/02/20/%E8%AF%97%E8%AF%8D_%E6%B0%B4%E9%BE%99%E5%90%9F/" class="post-title-link" itemprop="url">水龙吟</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-02-20 20:03:00" itemprop="dateCreated datePublished" datetime="2018-02-20T20:03:00+08:00">2018-02-20</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%97%E8%AF%8D/" itemprop="url" rel="index"><span itemprop="name">诗词</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><br>沐风又淋暮雨，偏照灿灿晚来灯。</p>
-<p>流水去处，顺载黄叶，一洗陈思。</p>
-<p>高楼过眼，遮天遥望，还遇高楼。</p>
-<p>青天浴归人，半遮湿眉，却露眼、泪三分。</p>
-<p><br></p>
-<p>不悲初春细雨，悲旧堂，未语新言。</p>
-<p>镜花已碎，水月何寻?</p>
-<p>车马逐路，易追年岁，难追离人。</p>
-<p>书词罢，暮雨将息，初觉寒风渐渐。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -959,7 +978,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">26</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -972,7 +991,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
