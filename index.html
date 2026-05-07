@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI 视频生成器</title>
+  <title>Video Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -447,7 +447,7 @@
       </svg>
     </div>
     <div class="header-text">
-      <h1>AI 视频生成器</h1>
+      <h1>Video Generator</h1>
       <p>Image to Video · DashScope Wan · 阿里云模型</p>
     </div>
   </header>
@@ -630,7 +630,16 @@ function resumeActiveTasks() {
   setupDrag();
   renderHistory();
   resumeActiveTasks();
-  setTimeout(() => { if (document.activeElement) document.activeElement.blur(); }, 100);
+
+  function blurFocused() {
+    if (document.activeElement && document.activeElement !== document.body) {
+      document.activeElement.blur();
+    }
+  }
+  [50, 200, 500, 1000].forEach(ms => setTimeout(blurFocused, ms));
+  window.addEventListener('pageshow', () =>
+    [50, 200, 500, 1000].forEach(ms => setTimeout(blurFocused, ms))
+  );
 })();
 
 /* ── API Key ── */
