@@ -503,9 +503,28 @@ let submitting    = false;              // true only during the POST request
 const activeTasks = new Map();         // taskId → { prompt, resolution, duration, startTime, apiKey }
 let tickInterval  = null;              // 1s interval to refresh elapsed times
 
-const HIST_KEY  = 'dashscope_history';
-const HIST_MAX  = 20;
-const URL_TTL   = 24 * 60 * 60 * 1000; // treat URLs older than 24h as likely expired
+const HIST_KEY   = 'dashscope_history';
+const ACTIVE_KEY = 'dashscope_active_tasks';
+const HIST_MAX   = 20;
+const URL_TTL    = 24 * 60 * 60 * 1000;
+
+function persistActiveTasks() {
+  const data = [...activeTasks.entries()].map(([id, t]) => ({ id, ...t }));
+  if (data.length) localStorage.setItem(ACTIVE_KEY, JSON.stringify(data));
+  else localStorage.removeItem(ACTIVE_KEY);
+}
+
+function resumeActiveTasks() {
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem(ACTIVE_KEY) || '[]'); }
+  catch { localStorage.removeItem(ACTIVE_KEY); return; }
+  for (const t of saved) {
+    activeTasks.set(t.id, { prompt: t.prompt, resolution: t.resolution,
+      duration: t.duration, startTime: t.startTime, apiKey: t.apiKey });
+    poll(t.id);
+  }
+  if (activeTasks.size) { startTick(); renderActiveTasks(); }
+}
 
 /* ── Init ── */
 (function () {
@@ -519,6 +538,7 @@ const URL_TTL   = 24 * 60 * 60 * 1000; // treat URLs older than 24h as likely ex
   if (!localStorage.getItem(PROXY_KEY)) localStorage.setItem(PROXY_KEY, proxy);
   setupDrag();
   renderHistory();
+  resumeActiveTasks();
 })();
 
 /* ── API Key ── */
@@ -688,6 +708,7 @@ async function generate() {
 
     const taskId = data.output.task_id;
     activeTasks.set(taskId, { prompt, resolution, duration, startTime: Date.now(), apiKey });
+    persistActiveTasks();
 
     // Unlock the form immediately — user can start the next job
     submitting = false;
@@ -722,6 +743,7 @@ function poll(taskId) {
     if (status === 'SUCCEEDED') {
       const url = data.output.video_url;
       activeTasks.delete(taskId);
+      persistActiveTasks();
       renderActiveTasks();
       saveHistory({ taskId, url, elapsed, prompt: task.prompt, resolution: task.resolution, duration: task.duration });
       document.getElementById('resultVideo').src = url;
@@ -730,6 +752,7 @@ function poll(taskId) {
       document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
     } else if (status === 'FAILED') {
       activeTasks.delete(taskId);
+      persistActiveTasks();
       renderActiveTasks();
       showStatusBox('error', '生成失败', data.output?.message || '任务执行出错，请重试');
     } else {
