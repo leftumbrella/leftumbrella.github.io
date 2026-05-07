@@ -509,7 +509,7 @@
           <label for="duration">时长 &nbsp;<span style="font-weight:700;color:var(--blue)" id="durationVal">5</span><span style="font-weight:400"> 秒</span></label>
           <div class="slider-track">
             <span class="slider-label">3s</span>
-            <input type="range" id="duration" min="3" max="15" value="5" step="1"
+            <input type="range" id="duration" min="2" max="15" value="5" step="1"
                    oninput="document.getElementById('durationVal').textContent=this.value">
             <span class="slider-label">15s</span>
           </div>
@@ -585,7 +585,7 @@ function apiUrl(path) {
   const proxy = localStorage.getItem(PROXY_KEY) || '';
   return proxy ? `${proxy.replace(/\/$/, '')}/api/v1${path}` : `${API_BASE}${path}`;
 }
-const NEG_PROMPT = 'deformed face, distorted face, disfigured, bad anatomy, multiple faces, face mutation, asymmetrical face, unnatural expression, stiff expression, frozen expression, dead eyes, different person, identity change, flickering, temporal inconsistency, worst quality, low quality, blurry';
+const NEG_PROMPT = 'deformed face, distorted face, disfigured, bad anatomy, multiple faces, face mutation, asymmetrical face, different person, identity change, inconsistent face, morphing face, lip sync mismatch, out of sync lips, mouth not matching audio, closed mouth while speaking, mouth not moving, frozen mouth, incorrect mouth shape, exaggerated mouth movement, distorted mouth, mumbling mouth, mouth shape mismatch, unnatural expression, stiff expression, frozen expression, dead eyes, robotic expression, lifeless face, blank stare, vacant expression, forced smile, expressionless, stiff movement, robotic motion, jerky motion, unnatural pose, rigid body, frozen body, mannequin-like, puppet-like movement, floating limbs, disconnected limbs, unnatural gait, abrupt motion, choppy animation, low frame rate motion, flickering, temporal inconsistency, frame jitter, motion blur artifacts, inconsistent lighting, identity drift, morphing between frames, ghosting, motion artifacts, frame skipping, worst quality, low quality, blurry, low resolution, artifacts, noise';
 
 let imgBase64     = null;
 let imgWidth      = 0;
