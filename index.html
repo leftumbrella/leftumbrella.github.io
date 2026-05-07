@@ -482,15 +482,15 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="xaiKey">
-          xAI API Key
-          <span class="saved-badge" id="xaiSavedBadge">✓ 已保存</span>
+        <label for="deepseekKey">
+          DeepSeek API Key
+          <span class="saved-badge" id="deepseekSavedBadge">✓ 已保存</span>
         </label>
         <div class="api-key-row">
-          <input type="password" id="xaiKey" placeholder="xai-xxxxxxxxxxxxxxxxxxxxxxxx"
-                 autocomplete="off" spellcheck="false" onchange="saveXaiApiKey()" onblur="saveXaiApiKey()">
-          <button class="btn btn-ghost" id="xaiToggleBtn" onclick="toggleXaiKey()">显示</button>
-          <button class="btn btn-primary" onclick="saveXaiApiKey()">保存</button>
+          <input type="password" id="deepseekKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+                 autocomplete="off" spellcheck="false" onchange="saveDeepseekApiKey()" onblur="saveDeepseekApiKey()">
+          <button class="btn btn-ghost" id="deepseekToggleBtn" onclick="toggleDeepseekKey()">显示</button>
+          <button class="btn btn-primary" onclick="saveDeepseekApiKey()">保存</button>
         </div>
       </div>
       <div class="form-group">
@@ -615,7 +615,7 @@
 
 <script>
 const STORE_KEY  = 'dashscope_api_key';
-const XAI_KEY    = 'xai_api_key';
+const DEEPSEEK_KEY = 'deepseek_api_key';
 const PROXY_KEY  = 'dashscope_proxy';
 const API_ORIGIN = 'https://dashscope-intl.aliyuncs.com';
 const API_BASE   = `${API_ORIGIN}/api/v1`;
@@ -663,10 +663,10 @@ function resumeActiveTasks() {
     document.getElementById('apiKey').value = saved;
     document.getElementById('savedBadge').style.display = 'inline';
   }
-  const xaiSaved = localStorage.getItem(XAI_KEY);
-  if (xaiSaved) {
-    document.getElementById('xaiKey').value = xaiSaved;
-    document.getElementById('xaiSavedBadge').style.display = 'inline';
+  const deepseekSaved = localStorage.getItem(DEEPSEEK_KEY);
+  if (deepseekSaved) {
+    document.getElementById('deepseekKey').value = deepseekSaved;
+    document.getElementById('deepseekSavedBadge').style.display = 'inline';
   }
   const proxy = localStorage.getItem(PROXY_KEY) || 'https://small-mud-95c9.lefthhau.workers.dev';
   document.getElementById('proxyUrl').value = proxy;
@@ -716,19 +716,19 @@ function toggleKey() {
   btn.textContent = hide ? '隐藏' : '显示';
 }
 
-/* ── API Key — xAI ── */
-function saveXaiApiKey() {
-  const v = document.getElementById('xaiKey').value.trim();
+/* ── API Key — DeepSeek ── */
+function saveDeepseekApiKey() {
+  const v = document.getElementById('deepseekKey').value.trim();
   if (!v) return;
-  localStorage.setItem(XAI_KEY, v);
-  const b = document.getElementById('xaiSavedBadge');
+  localStorage.setItem(DEEPSEEK_KEY, v);
+  const b = document.getElementById('deepseekSavedBadge');
   b.style.display = 'inline';
   b.textContent = '✓ 已保存';
 }
 
-function toggleXaiKey() {
-  const inp = document.getElementById('xaiKey');
-  const btn = document.getElementById('xaiToggleBtn');
+function toggleDeepseekKey() {
+  const inp = document.getElementById('deepseekKey');
+  const btn = document.getElementById('deepseekToggleBtn');
   const hide = inp.type === 'password';
   inp.type = hide ? 'text' : 'password';
   btn.textContent = hide ? '隐藏' : '显示';
@@ -739,8 +739,8 @@ async function runOptimize() {
   const originalPrompt = document.getElementById('prompt').value.trim();
   if (!originalPrompt) { alert('请先填写提示词'); return; }
 
-  const xaiKey = localStorage.getItem(XAI_KEY) || document.getElementById('xaiKey').value.trim();
-  if (!xaiKey) { alert('请先填写并保存 XAI API Key'); return; }
+  const deepseekKey = localStorage.getItem(DEEPSEEK_KEY) || document.getElementById('deepseekKey').value.trim();
+  if (!deepseekKey) { alert('请先填写并保存 DeepSeek API Key'); return; }
   const proxy = localStorage.getItem(PROXY_KEY) || '';
   if (!proxy) { alert('使用提示词优化需要配置 CORS 代理 URL'); return; }
 
@@ -750,10 +750,10 @@ async function runOptimize() {
   const optimizeBtn = document.getElementById('optimizeBtn');
   optimizeBtn.disabled = true;
   optimizeBtn.textContent = '优化中…';
-  showStatusBox('pending', '正在优化提示词…', '调用 xAI Grok 模型');
+  showStatusBox('pending', '正在优化提示词…', '调用 DeepSeek 模型');
 
   try {
-    const optimized = await callXaiOptimize(originalPrompt, xaiKey, proxy);
+    const optimized = await callDeepseekOptimize(originalPrompt, deepseekKey, proxy);
     document.getElementById('optimizedPrompt').value = optimized;
     document.getElementById('optimizedPromptBox').style.display = 'block';
     showSplitButtons();
@@ -900,36 +900,38 @@ function createThumbnail(dataUrl, maxPx = 120) {
   });
 }
 
-/* ── xAI prompt optimization ── */
-async function callXaiOptimize(originalPrompt, xaiKey, proxy) {
-  const url = `${proxy.replace(/\/$/, '')}/xai/v1/responses`;
+/* ── DeepSeek prompt optimization ── */
+async function callDeepseekOptimize(originalPrompt, deepseekKey, proxy) {
+  const url = `${proxy.replace(/\/$/, '')}/deepseek/chat/completions`;
   const resp = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${xaiKey}`
+      'Authorization': `Bearer ${deepseekKey}`
     },
     body: JSON.stringify({
-      model: 'grok-4.3',
-      input: [
+      model: 'deepseek-v4-flash',
+      messages: [
         {
           role: 'system',
           content: '你是一个资深的视频生成AI领域专家，你擅长将用户的视频生成提示词优化地明确而详细。每当用户发送给你一条消息，你需要认为改消息是一条视频生成提示词。你需要将原消息变成更加明确的提示词并输出。你的回答必须是转换后的提示词内容本身，不能包含别的解释性、总结性等任何无关内容，你的回答文字的100%都是转换后的提示词本身。你的功能是用于优化视频编辑提示词（首帧为用户上传图片）而非从0开始的视频生成提示词，因此不要回答成从0制作视频的风格。回答必须使用中文。不要强调视频时常与画质。除非用户提示词明确提到可以变动镜头，否则镜头应该保持固定。'
         },
         { role: 'user', content: originalPrompt.replace(/[\r\n]+/g, '') }
-      ]
+      ],
+      thinking: { type: 'enabled' },
+      reasoning_effort: 'high',
+      stream: false
     })
   });
   if (!resp.ok) {
     const err = await resp.json().catch(() => ({}));
-    throw new Error(err.error?.message || `xAI HTTP ${resp.status}`);
+    throw new Error(err.error?.message || `DeepSeek HTTP ${resp.status}`);
   }
   const data = await resp.json();
-  console.log('[xAI raw response]', JSON.stringify(data, null, 2));
-  const messageItem = data.output?.find(o => o.type === 'message');
-  const textItem = messageItem?.content?.find(c => c.type === 'output_text');
-  if (!textItem?.text) throw new Error('无法解析 xAI 返回内容，原始响应已打印至控制台（F12）');
-  return textItem.text;
+  console.log('[DeepSeek raw response]', JSON.stringify(data, null, 2));
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) throw new Error('无法解析 DeepSeek 返回内容，原始响应已打印至控制台（F12）');
+  return content;
 }
 
 /* ── Generate ── */
