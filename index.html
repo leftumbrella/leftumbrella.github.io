@@ -93,11 +93,10 @@
     /* ── Settings ── */
     .settings-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
       gap: 20px;
       align-items: start;
     }
-    @media (max-width: 600px) { .settings-grid { grid-template-columns: 1fr; } }
 
     /* ── Main grid ── */
     .main-grid {
@@ -167,6 +166,20 @@
       border-radius: 4px;
       font-size: 0.71rem;
       box-shadow: 0 0 0 1px rgba(15,23,42,0.08);
+    }
+
+    /* ── Split generate buttons ── */
+    .gen-btn-group { display: flex; gap: 8px; }
+    .gen-btn-group .btn { flex: 1; }
+
+    /* ── Optimized prompt preview ── */
+    #optimizedPromptBox textarea {
+      border-left: 3px solid var(--blue);
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.18);
+      background: var(--blue-faint);
+    }
+    #optimizedPromptBox textarea:focus {
+      background: #fff;
     }
 
     /* ── Upload zone ── */
@@ -469,6 +482,18 @@
         </div>
       </div>
       <div class="form-group">
+        <label for="xaiKey">
+          xAI API Key
+          <span class="saved-badge" id="xaiSavedBadge">✓ 已保存</span>
+        </label>
+        <div class="api-key-row">
+          <input type="password" id="xaiKey" placeholder="xai-xxxxxxxxxxxxxxxxxxxxxxxx"
+                 autocomplete="off" spellcheck="false" onchange="saveXaiApiKey()" onblur="saveXaiApiKey()">
+          <button class="btn btn-ghost" id="xaiToggleBtn" onclick="toggleXaiKey()">显示</button>
+          <button class="btn btn-primary" onclick="saveXaiApiKey()">保存</button>
+        </div>
+      </div>
+      <div class="form-group">
         <label for="proxyUrl">
           CORS 代理 URL
           <span style="font-weight:400;color:var(--text-3)">(GitHub Pages 必填)</span>
@@ -503,12 +528,23 @@
         <div class="form-group">
           <label for="prompt">提示词</label>
           <textarea id="prompt" placeholder="描述视频画面，例如：人物缓缓转身，微风吹动发丝，暖阳照射，电影质感镜头…"></textarea>
+          <div style="margin-top:8px;text-align:right">
+            <button class="btn btn-ghost" id="optimizeBtn" onclick="runOptimize()" style="padding:7px 14px;font-size:0.8rem">✨ 提示词优化</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="optimizedPromptBox" style="display:none">
+          <label for="optimizedPrompt">
+            优化后的提示词
+            <span style="font-weight:400;color:var(--blue);font-size:0.75rem">· 可编辑</span>
+          </label>
+          <textarea id="optimizedPrompt"></textarea>
         </div>
 
         <div class="form-group">
           <label for="duration">时长 &nbsp;<span style="font-weight:700;color:var(--blue)" id="durationVal">5</span><span style="font-weight:400"> 秒</span></label>
           <div class="slider-track">
-            <span class="slider-label">3s</span>
+            <span class="slider-label">2s</span>
             <input type="range" id="duration" min="2" max="15" value="5" step="1"
                    oninput="document.getElementById('durationVal').textContent=this.value">
             <span class="slider-label">15s</span>
@@ -529,9 +565,11 @@
           </div>
         </div>
 
-        <button class="btn btn-primary btn-full" id="genBtn" onclick="generate()">
-          生成视频
-        </button>
+        <div id="genBtnArea">
+          <button class="btn btn-primary btn-full" id="genBtn" onclick="generate('original')">
+            生成视频
+          </button>
+        </div>
       </div>
     </div>
 
@@ -577,6 +615,7 @@
 
 <script>
 const STORE_KEY  = 'dashscope_api_key';
+const XAI_KEY    = 'xai_api_key';
 const PROXY_KEY  = 'dashscope_proxy';
 const API_ORIGIN = 'https://dashscope-intl.aliyuncs.com';
 const API_BASE   = `${API_ORIGIN}/api/v1`;
@@ -624,6 +663,11 @@ function resumeActiveTasks() {
     document.getElementById('apiKey').value = saved;
     document.getElementById('savedBadge').style.display = 'inline';
   }
+  const xaiSaved = localStorage.getItem(XAI_KEY);
+  if (xaiSaved) {
+    document.getElementById('xaiKey').value = xaiSaved;
+    document.getElementById('xaiSavedBadge').style.display = 'inline';
+  }
   const proxy = localStorage.getItem(PROXY_KEY) || 'https://small-mud-95c9.lefthhau.workers.dev';
   document.getElementById('proxyUrl').value = proxy;
   if (!localStorage.getItem(PROXY_KEY)) localStorage.setItem(PROXY_KEY, proxy);
@@ -642,7 +686,13 @@ function resumeActiveTasks() {
   );
 })();
 
-/* ── API Key ── */
+/* ── Event listeners ── */
+document.getElementById('prompt').addEventListener('input', function () {
+  document.getElementById('optimizedPromptBox').style.display = 'none';
+  showSingleButton();
+});
+
+/* ── API Key — DashScope ── */
 function saveApiKey() {
   const v = document.getElementById('apiKey').value.trim();
   if (!v) return;
@@ -664,6 +714,74 @@ function toggleKey() {
   const hide = inp.type === 'password';
   inp.type = hide ? 'text' : 'password';
   btn.textContent = hide ? '隐藏' : '显示';
+}
+
+/* ── API Key — xAI ── */
+function saveXaiApiKey() {
+  const v = document.getElementById('xaiKey').value.trim();
+  if (!v) return;
+  localStorage.setItem(XAI_KEY, v);
+  const b = document.getElementById('xaiSavedBadge');
+  b.style.display = 'inline';
+  b.textContent = '✓ 已保存';
+}
+
+function toggleXaiKey() {
+  const inp = document.getElementById('xaiKey');
+  const btn = document.getElementById('xaiToggleBtn');
+  const hide = inp.type === 'password';
+  inp.type = hide ? 'text' : 'password';
+  btn.textContent = hide ? '隐藏' : '显示';
+}
+
+/* ── Optimize button ── */
+async function runOptimize() {
+  const originalPrompt = document.getElementById('prompt').value.trim();
+  if (!originalPrompt) { alert('请先填写提示词'); return; }
+
+  const xaiKey = localStorage.getItem(XAI_KEY) || document.getElementById('xaiKey').value.trim();
+  if (!xaiKey) { alert('请先填写并保存 XAI API Key'); return; }
+  const proxy = localStorage.getItem(PROXY_KEY) || '';
+  if (!proxy) { alert('使用提示词优化需要配置 CORS 代理 URL'); return; }
+
+  if (submitting) return;
+  submitting = true;
+
+  const optimizeBtn = document.getElementById('optimizeBtn');
+  optimizeBtn.disabled = true;
+  optimizeBtn.textContent = '优化中…';
+  showStatusBox('pending', '正在优化提示词…', '调用 xAI Grok 模型');
+
+  try {
+    const optimized = await callXaiOptimize(originalPrompt, xaiKey, proxy);
+    document.getElementById('optimizedPrompt').value = optimized;
+    document.getElementById('optimizedPromptBox').style.display = 'block';
+    showSplitButtons();
+    clearStatusBox();
+  } catch (err) {
+    showStatusBox('error', '提示词优化失败', err.message);
+  } finally {
+    submitting = false;
+    optimizeBtn.disabled = false;
+    optimizeBtn.textContent = '✨ 提示词优化';
+  }
+}
+
+function showSplitButtons() {
+  document.getElementById('genBtnArea').innerHTML =
+    `<div class="gen-btn-group">
+      <button class="btn btn-ghost btn-full" onclick="generate('original')">原始提示词生成</button>
+      <button class="btn btn-primary btn-full" onclick="generate('optimized')">优化提示词生成</button>
+    </div>`;
+}
+
+function showSingleButton() {
+  document.getElementById('genBtnArea').innerHTML =
+    `<button class="btn btn-primary btn-full" onclick="generate('original')">生成视频</button>`;
+}
+
+function setGenAreaDisabled(disabled) {
+  document.getElementById('genBtnArea').querySelectorAll('button').forEach(b => b.disabled = disabled);
 }
 
 /* ── Image ── */
@@ -782,12 +900,41 @@ function createThumbnail(dataUrl, maxPx = 120) {
   });
 }
 
+/* ── xAI prompt optimization ── */
+async function callXaiOptimize(originalPrompt, xaiKey, proxy) {
+  const url = `${proxy.replace(/\/$/, '')}/xai/v1/responses`;
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${xaiKey}`
+    },
+    body: JSON.stringify({
+      model: 'grok-4-1-fast-reasoning',
+      input: [
+        {
+          role: 'system',
+          content: '你是一个资深的视频生成AI领域专家，你擅长将用户的视频生成提示词优化地明确而详细。每当用户发送给你一条消息，你需要认为改消息是一条视频生成提示词。你需要将原消息变成更加明确的提示词并输出。你的回答必须是转换后的提示词内容本身，不能包含别的解释性、总结性等任何无关内容，你的回答文字的100%都是转换后的提示词本身。你的功能是用于优化视频编辑提示词（首帧为用户上传图片）而非从0开始的视频生成提示词，因此不要回答成从0制作视频的风格。回答必须使用中文。不要强调视频时常与画质。除非用户提示词明确提到可以变动镜头，否则镜头应该保持固定。'
+        },
+        { role: 'user', content: originalPrompt }
+      ]
+    })
+  });
+  if (!resp.ok) {
+    const err = await resp.json().catch(() => ({}));
+    throw new Error(err.error?.message || `xAI HTTP ${resp.status}`);
+  }
+  const data = await resp.json();
+  const textItem = data.output?.[0]?.content?.find(c => c.type === 'output_text');
+  if (!textItem?.text) throw new Error('无法解析 xAI 返回内容');
+  return textItem.text;
+}
+
 /* ── Generate ── */
-async function generate() {
+async function generate(mode = 'original') {
   if (submitting) return;
 
   const apiKey     = document.getElementById('apiKey').value.trim();
-  const prompt     = document.getElementById('prompt').value.trim();
   const duration   = parseInt(document.getElementById('duration').value, 10);
   const resolution = document.querySelector('input[name="res"]:checked').value;
 
@@ -797,16 +944,24 @@ async function generate() {
     alert(`图片尺寸 ${imgWidth}×${imgHeight} 不符合要求\n宽和高均需 ≥ 240px，请更换图片`);
     return;
   }
-  if (!prompt)    { alert('请填写提示词'); return; }
+
+  const originalPrompt = document.getElementById('prompt').value.trim();
+  if (!originalPrompt) { alert('请填写提示词'); return; }
+
+  let finalPrompt = originalPrompt;
+  if (mode === 'optimized') {
+    finalPrompt = document.getElementById('optimizedPrompt').value.trim();
+    if (!finalPrompt) { alert('优化后的提示词不能为空'); return; }
+  }
 
   submitting = true;
-  document.getElementById('genBtn').disabled = true;
+  setGenAreaDisabled(true);
   showStatusBox('pending', '正在提交任务…', '连接 DashScope 服务器');
 
   const body = {
     model: 'wan2.7-i2v-2026-04-25',
     input: {
-      prompt,
+      prompt: finalPrompt,
       media: [{ type: 'first_frame', url: imgBase64 }],
       'negative_prompt ': NEG_PROMPT
     },
@@ -836,17 +991,17 @@ async function generate() {
           : '请查看上方错误信息';
       showStatusBox('error', `[${code}] ${msg}`, hint);
       submitting = false;
-      document.getElementById('genBtn').disabled = false;
+      setGenAreaDisabled(false);
       return;
     }
 
     const taskId = data.output.task_id;
     const thumb = imgBase64 ? await createThumbnail(imgBase64) : null;
-    activeTasks.set(taskId, { prompt, resolution, duration, startTime: Date.now(), apiKey, thumb });
+    activeTasks.set(taskId, { prompt: finalPrompt, resolution, duration, startTime: Date.now(), apiKey, thumb });
     persistActiveTasks();
 
     submitting = false;
-    document.getElementById('genBtn').disabled = false;
+    setGenAreaDisabled(false);
     clearStatusBox();
     startTick();
     renderActiveTasks();
@@ -858,7 +1013,7 @@ async function generate() {
       isCors ? '请求被浏览器拦截（CORS）' : '网络错误：' + err.message,
       isCors ? '请在浏览器控制台查看详细错误' : '请检查网络连接');
     submitting = false;
-    document.getElementById('genBtn').disabled = false;
+    setGenAreaDisabled(false);
   }
 }
 
@@ -881,7 +1036,6 @@ function poll(taskId) {
       renderActiveTasks();
       saveHistory({ taskId, url, elapsed, prompt: task.prompt, resolution: task.resolution, duration: task.duration, thumb: task.thumb || null });
       document.getElementById('resultVideo').src = url;
-      document.getElementById('dlLink').href = url;
       document.getElementById('resultBox').style.display = 'block';
       document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
     } else if (status === 'FAILED') {
