@@ -266,6 +266,29 @@
     video { width: 100%; border-radius: 10px; background: #000; display: block; }
     .video-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 
+    /* ── Active tasks ── */
+    #activeTasksList { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .active-task {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      background: #fef9c3; border: 1px solid #fde68a; border-radius: 8px;
+      color: #854d0e;
+    }
+    .at-spinner {
+      flex-shrink: 0; width: 14px; height: 14px;
+      border: 2px solid rgba(133,77,14,0.2);
+      border-top-color: #854d0e;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    .at-info { flex: 1; min-width: 0; }
+    .at-prompt {
+      font-size: 0.85rem; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .at-meta { font-size: 0.74rem; margin-top: 2px; opacity: 0.8; }
+    .at-elapsed { font-size: 0.8rem; font-weight: 700; flex-shrink: 0; }
+
     /* ── History ── */
     .history-header {
       display: flex;
@@ -412,7 +435,7 @@
 
       <div class="card">
         <div class="card-title">生成状态</div>
-        <div id="statusIdle">等待生成…</div>
+        <div id="statusIdle" style="color:var(--text-muted);font-size:0.9rem">等待生成…</div>
         <div class="status-box" id="statusBox">
           <div class="status-row">
             <div class="spinner" id="spinner"></div>
@@ -422,6 +445,7 @@
             </div>
           </div>
         </div>
+        <div id="activeTasksList"></div>
       </div>
 
       <div class="card" id="resultBox">
@@ -453,10 +477,10 @@ const STORE_KEY = 'dashscope_api_key';
 const API_BASE  = 'https://dashscope-intl.aliyuncs.com/api/v1';
 const NEG_PROMPT = 'deformed face, distorted face, disfigured, bad anatomy, multiple faces, face mutation, asymmetrical face, unnatural expression, stiff expression, frozen expression, dead eyes, different person, identity change, flickering, temporal inconsistency, worst quality, low quality, blurry';
 
-let imgBase64  = null;
-let busy       = false;
-let pollTimer  = null;
-let startTime  = 0;
+let imgBase64     = null;
+let submitting    = false;              // true only during the POST request
+const activeTasks = new Map();         // taskId → { prompt, resolution, duration, startTime, apiKey }
+let tickInterval  = null;              // 1s interval to refresh elapsed times
 
 const HIST_KEY  = 'dashscope_history';
 const HIST_MAX  = 20;
@@ -524,7 +548,7 @@ function readFile(file) {
 }
 
 /* ── Status helpers ── */
-function showStatus(type, text, sub) {
+function showStatusBox(type, text, sub) {
   document.getElementById('statusIdle').style.display = 'none';
   const box = document.getElementById('statusBox');
   box.className = 'status-box ' + type;
@@ -534,30 +558,66 @@ function showStatus(type, text, sub) {
   document.getElementById('spinner').style.display = type === 'pending' ? 'block' : 'none';
 }
 
-function resetStatus() {
+function clearStatusBox() {
   document.getElementById('statusBox').style.display = 'none';
-  document.getElementById('statusIdle').style.display = 'block';
+  if (activeTasks.size === 0)
+    document.getElementById('statusIdle').style.display = 'block';
+}
+
+/* ── Active tasks ticker ── */
+function startTick() {
+  if (tickInterval) return;
+  tickInterval = setInterval(renderActiveTasks, 1000);
+}
+
+function stopTick() {
+  clearInterval(tickInterval);
+  tickInterval = null;
+}
+
+function renderActiveTasks() {
+  const list = document.getElementById('activeTasksList');
+  const idle = document.getElementById('statusIdle');
+  if (activeTasks.size === 0) {
+    list.innerHTML = '';
+    if (document.getElementById('statusBox').style.display === 'none')
+      idle.style.display = 'block';
+    stopTick();
+    return;
+  }
+  idle.style.display = 'none';
+  list.innerHTML = [...activeTasks.entries()].map(([id, t]) => {
+    const elapsed = Math.round((Date.now() - t.startTime) / 1000);
+    const shortId = id.slice(-8);
+    const promptEsc = t.prompt.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+    <div class="active-task">
+      <div class="at-spinner"></div>
+      <div class="at-info">
+        <div class="at-prompt">${promptEsc}</div>
+        <div class="at-meta">${t.resolution} · ${t.duration}s · …${shortId}</div>
+      </div>
+      <div class="at-elapsed">${elapsed}s</div>
+    </div>`;
+  }).join('');
 }
 
 /* ── Generate ── */
 async function generate() {
-  if (busy) return;
+  if (submitting) return;
 
   const apiKey     = document.getElementById('apiKey').value.trim();
   const prompt     = document.getElementById('prompt').value.trim();
   const duration   = parseInt(document.getElementById('duration').value, 10);
   const resolution = document.querySelector('input[name="res"]:checked').value;
 
-  if (!apiKey)   { alert('请先填写并保存 API Key'); return; }
+  if (!apiKey)    { alert('请先填写并保存 API Key'); return; }
   if (!imgBase64) { alert('请先上传一张图片'); return; }
-  if (!prompt)   { alert('请填写提示词'); return; }
+  if (!prompt)    { alert('请填写提示词'); return; }
 
-  busy = true;
+  submitting = true;
   document.getElementById('genBtn').disabled = true;
-  document.getElementById('resultBox').style.display = 'none';
-  startTime = Date.now();
-
-  showStatus('pending', '正在提交任务…', '连接 DashScope 服务器');
+  showStatusBox('pending', '正在提交任务…', '连接 DashScope 服务器');
 
   const body = {
     model: 'wan2.7-i2v-2026-04-25',
@@ -590,68 +650,69 @@ async function generate() {
         : /invalid.*key|unauthorized/i.test(msg) || resp.status === 401
           ? '请检查 API Key 是否正确'
           : '请查看上方错误信息';
-      showStatus('error', `[${code}] ${msg}`, hint);
-      done();
+      showStatusBox('error', `[${code}] ${msg}`, hint);
+      submitting = false;
+      document.getElementById('genBtn').disabled = false;
       return;
     }
 
-    showStatus('pending', '任务已提交，视频生成中…',
-      `Task ID: ${data.output.task_id}  |  已等待 0s`);
-    poll(data.output.task_id, apiKey);
+    const taskId = data.output.task_id;
+    activeTasks.set(taskId, { prompt, resolution, duration, startTime: Date.now(), apiKey });
+
+    // Unlock the form immediately — user can start the next job
+    submitting = false;
+    document.getElementById('genBtn').disabled = false;
+    clearStatusBox();
+    startTick();
+    renderActiveTasks();
+    poll(taskId);
 
   } catch (err) {
     const isCors = err instanceof TypeError && err.message.toLowerCase().includes('fetch');
-    showStatus('error',
+    showStatusBox('error',
       isCors ? '请求被浏览器拦截（CORS）' : '网络错误：' + err.message,
       isCors ? '请在浏览器控制台查看详细错误' : '请检查网络连接');
-    done();
+    submitting = false;
+    document.getElementById('genBtn').disabled = false;
   }
 }
 
-function poll(taskId, apiKey) {
+function poll(taskId) {
+  const task = activeTasks.get(taskId);
+  if (!task) return;
+
   fetch(`${API_BASE}/tasks/${taskId}`, {
-    headers: { 'Authorization': `Bearer ${apiKey}` }
+    headers: { 'Authorization': `Bearer ${task.apiKey}` }
   })
   .then(r => r.json())
   .then(data => {
-    const status = data.output?.task_status;
-    const elapsed = Math.round((Date.now() - startTime) / 1000);
+    const status  = data.output?.task_status;
+    const elapsed = Math.round((Date.now() - task.startTime) / 1000);
 
     if (status === 'SUCCEEDED') {
       const url = data.output.video_url;
+      activeTasks.delete(taskId);
+      renderActiveTasks();
+      saveHistory({ taskId, url, elapsed, prompt: task.prompt, resolution: task.resolution, duration: task.duration });
       document.getElementById('resultVideo').src = url;
       document.getElementById('dlLink').href = url;
       document.getElementById('resultBox').style.display = 'block';
       document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
-      showStatus('success', '视频生成成功！', `共耗时约 ${elapsed}s`);
-      saveHistory({ taskId, url, elapsed });
-      done();
     } else if (status === 'FAILED') {
-      showStatus('error', '生成失败', data.output?.message || '任务执行出错，请重试');
-      done();
+      activeTasks.delete(taskId);
+      renderActiveTasks();
+      showStatusBox('error', '生成失败', data.output?.message || '任务执行出错，请重试');
     } else {
-      showStatus('pending', '视频生成中，请稍候…',
-        `Task ID: ${taskId}  |  已等待 ${elapsed}s  |  状态：${status}`);
-      pollTimer = setTimeout(() => poll(taskId, apiKey), 5000);
+      setTimeout(() => poll(taskId), 5000);
     }
   })
-  .catch(err => {
-    showStatus('error', '轮询出错：' + err.message, '5 秒后重试…');
-    pollTimer = setTimeout(() => poll(taskId, apiKey), 5000);
+  .catch(() => {
+    setTimeout(() => poll(taskId), 5000);
   });
 }
 
-function done() {
-  busy = false;
-  document.getElementById('genBtn').disabled = false;
-}
-
 /* ── History ── */
-function saveHistory({ taskId, url, elapsed }) {
-  const prompt     = document.getElementById('prompt').value.trim();
-  const resolution = document.querySelector('input[name="res"]:checked').value;
-  const duration   = parseInt(document.getElementById('duration').value, 10);
-
+function saveHistory({ taskId, url, elapsed, prompt, resolution, duration }) {
   const list = getHistList();
   list.unshift({ id: Date.now(), timestamp: Date.now(), prompt, resolution, duration, url, elapsed, taskId });
   if (list.length > HIST_MAX) list.length = HIST_MAX;
