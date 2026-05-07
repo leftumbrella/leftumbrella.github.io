@@ -556,7 +556,7 @@
         <div class="card-title">生成结果</div>
         <video id="resultVideo" controls playsinline></video>
         <div class="video-actions">
-          <a id="dlLink" class="btn btn-primary" download="ai_video.mp4">↓ 下载视频</a>
+          <button id="dlBtn" class="btn btn-primary" onclick="saveVideo(this, document.getElementById('resultVideo').src, 'ai_video.mp4')">↓ 下载视频</button>
         </div>
       </div>
     </div>
@@ -889,6 +889,34 @@ function poll(taskId) {
   });
 }
 
+/* ── Download / Share ── */
+async function saveVideo(btn, url, filename) {
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  if (isMobile && navigator.share) {
+    const orig = btn.textContent;
+    btn.textContent = '加载中…';
+    btn.disabled = true;
+    try {
+      const resp = await fetch(url);
+      const blob = await resp.blob();
+      const file = new File([blob], filename, { type: blob.type || 'video/mp4' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file] });
+        btn.textContent = orig;
+        btn.disabled = false;
+        return;
+      }
+    } catch (_) { /* fall through */ }
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
 /* ── Copy prompt ── */
 function copyPromptFromBtn(btn) {
   const prompt = btn.dataset.prompt;
@@ -938,7 +966,6 @@ function playFromHistory(url) {
   const video = document.getElementById('resultVideo');
   const box   = document.getElementById('resultBox');
   video.src = url;
-  document.getElementById('dlLink').href = url;
   box.style.display = 'block';
   box.scrollIntoView({ behavior: 'smooth' });
 }
@@ -972,8 +999,8 @@ function renderHistory() {
       <div class="hist-actions">
         <button class="btn btn-primary" style="padding:7px 14px;font-size:0.8rem"
           onclick="playFromHistory('${item.url}')">▶ 播放</button>
-        <a class="btn btn-ghost" style="padding:7px 14px;font-size:0.8rem"
-          href="${item.url}" download="ai_video_${item.id}.mp4">↓ 下载</a>
+        <button class="btn btn-ghost" style="padding:7px 14px;font-size:0.8rem"
+          onclick="saveVideo(this,'${item.url}','ai_video_${item.id}.mp4')">↓ 下载</button>
         <button class="btn btn-ghost" style="padding:7px 14px;font-size:0.8rem"
           data-prompt="${promptEsc}" onclick="copyPromptFromBtn(this)">复制提示词</button>
       </div>
