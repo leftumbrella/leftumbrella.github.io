@@ -265,6 +265,65 @@
     #resultBox { display: none; }
     video { width: 100%; border-radius: 10px; background: #000; display: block; }
     .video-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+    /* ── History ── */
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 12px;
+    }
+    .hist-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+    }
+    .hist-time { font-size: 0.75rem; color: var(--text-muted); }
+    .hist-prompt {
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .hist-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: rgba(99,102,241,0.1);
+      color: var(--primary);
+    }
+    .tag.expired { background: #fef9c3; color: #854d0e; }
+    .hist-actions { display: flex; gap: 6px; margin-top: 2px; }
+    .hist-del {
+      position: absolute;
+      top: 10px; right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: color 0.15s, background 0.15s;
+    }
+    .hist-del:hover { color: #ef4444; background: #fee2e2; }
+    #histEmpty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 24px 0; }
   </style>
 </head>
 <body>
@@ -284,7 +343,7 @@
         <span class="saved-badge" id="savedBadge">✓ 已保存</span>
       </label>
       <div class="api-key-row">
-        <input type="password" id="apiKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+        <input type="password" id="apiKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false" onchange="saveApiKey()" onblur="saveApiKey()">
         <button class="btn btn-ghost" id="toggleBtn" onclick="toggleKey()">显示</button>
         <button class="btn btn-primary" onclick="saveApiKey()">保存</button>
       </div>
@@ -377,6 +436,16 @@
 
   </div><!-- /main-grid -->
 
+  <!-- History -->
+  <div class="card" id="historyCard" style="display:none">
+    <div class="history-header">
+      <div class="card-title" style="margin:0">生成历史</div>
+      <button class="btn btn-ghost" style="padding:6px 12px;font-size:0.8rem" onclick="clearHistory()">清空</button>
+    </div>
+    <div id="histEmpty">暂无历史记录</div>
+    <div class="history-grid" id="historyGrid"></div>
+  </div>
+
 </div><!-- /container -->
 
 <script>
@@ -389,6 +458,10 @@ let busy       = false;
 let pollTimer  = null;
 let startTime  = 0;
 
+const HIST_KEY  = 'dashscope_history';
+const HIST_MAX  = 20;
+const URL_TTL   = 24 * 60 * 60 * 1000; // treat URLs older than 24h as likely expired
+
 /* ── Init ── */
 (function () {
   const saved = localStorage.getItem(STORE_KEY);
@@ -397,12 +470,13 @@ let startTime  = 0;
     document.getElementById('savedBadge').style.display = 'inline';
   }
   setupDrag();
+  renderHistory();
 })();
 
 /* ── API Key ── */
 function saveApiKey() {
   const v = document.getElementById('apiKey').value.trim();
-  if (!v) { alert('请输入 API Key'); return; }
+  if (!v) return;
   localStorage.setItem(STORE_KEY, v);
   const b = document.getElementById('savedBadge');
   b.style.display = 'inline';
@@ -550,6 +624,7 @@ function poll(taskId, apiKey) {
       document.getElementById('resultBox').style.display = 'block';
       document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
       showStatus('success', '视频生成成功！', `共耗时约 ${elapsed}s`);
+      saveHistory({ taskId, url, elapsed });
       done();
     } else if (status === 'FAILED') {
       showStatus('error', '生成失败', data.output?.message || '任务执行出错，请重试');
@@ -569,6 +644,80 @@ function poll(taskId, apiKey) {
 function done() {
   busy = false;
   document.getElementById('genBtn').disabled = false;
+}
+
+/* ── History ── */
+function saveHistory({ taskId, url, elapsed }) {
+  const prompt     = document.getElementById('prompt').value.trim();
+  const resolution = document.querySelector('input[name="res"]:checked').value;
+  const duration   = parseInt(document.getElementById('duration').value, 10);
+
+  const list = getHistList();
+  list.unshift({ id: Date.now(), timestamp: Date.now(), prompt, resolution, duration, url, elapsed, taskId });
+  if (list.length > HIST_MAX) list.length = HIST_MAX;
+  localStorage.setItem(HIST_KEY, JSON.stringify(list));
+  renderHistory();
+}
+
+function getHistList() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; }
+  catch { return []; }
+}
+
+function deleteHistItem(id) {
+  const list = getHistList().filter(i => i.id !== id);
+  localStorage.setItem(HIST_KEY, JSON.stringify(list));
+  renderHistory();
+}
+
+function clearHistory() {
+  if (!confirm('确认清空所有历史记录？')) return;
+  localStorage.removeItem(HIST_KEY);
+  renderHistory();
+}
+
+function playFromHistory(url) {
+  const video = document.getElementById('resultVideo');
+  const box   = document.getElementById('resultBox');
+  video.src = url;
+  document.getElementById('dlLink').href = url;
+  box.style.display = 'block';
+  box.scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderHistory() {
+  const list = getHistList();
+  const card = document.getElementById('historyCard');
+  const grid = document.getElementById('historyGrid');
+  const empty = document.getElementById('histEmpty');
+
+  card.style.display = list.length ? 'block' : 'none';
+  if (!list.length) { grid.innerHTML = ''; return; }
+
+  empty.style.display = 'none';
+  grid.innerHTML = list.map(item => {
+    const d = new Date(item.timestamp);
+    const timeStr = d.toLocaleDateString('zh-CN') + ' ' + d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    const expired = (Date.now() - item.timestamp) > URL_TTL;
+    const promptEsc = item.prompt.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return `
+    <div class="hist-item">
+      <button class="hist-del" title="删除" onclick="deleteHistItem(${item.id})">×</button>
+      <div class="hist-time">${timeStr} · 耗时 ${item.elapsed}s</div>
+      <div class="hist-prompt">${promptEsc}</div>
+      <div class="hist-tags">
+        <span class="tag">${item.resolution}</span>
+        <span class="tag">${item.duration}s</span>
+        ${expired ? '<span class="tag expired">链接可能已过期</span>' : ''}
+      </div>
+      <div class="hist-actions">
+        <button class="btn btn-primary" style="padding:7px 14px;font-size:0.82rem"
+          onclick="playFromHistory('${item.url}')">▶ 播放</button>
+        <a class="btn btn-ghost" style="padding:7px 14px;font-size:0.82rem"
+          href="${item.url}" download="ai_video_${item.id}.mp4">↓ 下载</a>
+      </div>
+    </div>`;
+  }).join('');
 }
 </script>
 </body>
