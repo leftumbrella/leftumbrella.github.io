@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 视频生成器</title>
+  <style>
+    :root {
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --success: #16a34a;
+      --radius: 14px;
+      --shadow: 0 1px 4px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 16px 16px 48px;
+    }
+
+    .container { max-width: 980px; margin: 0 auto; }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      padding: 36px 0 28px;
+    }
+    header h1 {
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    header p { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    /* ── Grid ── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    @media (max-width: 660px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Form controls ── */
+    .form-group { margin-bottom: 16px; }
+    .form-group:last-child { margin-bottom: 0; }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 7px;
+      color: var(--text);
+    }
+
+    input[type="text"],
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font-size: 0.93rem;
+      color: var(--text);
+      background: var(--surface);
+      transition: border-color 0.18s, box-shadow 0.18s;
+      font-family: inherit;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    }
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+      line-height: 1.5;
+    }
+
+    /* ── API key row ── */
+    .api-key-row { display: flex; gap: 8px; align-items: center; }
+    .api-key-row input { flex: 1; min-width: 0; }
+    .saved-badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--success);
+      display: none;
+    }
+
+    /* ── Upload zone ── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.18s, background 0.18s;
+      position: relative;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.04);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .upload-icon { font-size: 2rem; line-height: 1; }
+    .upload-text { font-size: 0.88rem; font-weight: 600; color: var(--text-muted); }
+    .upload-hint { font-size: 0.76rem; color: var(--text-muted); opacity: 0.65; }
+
+    #previewImg {
+      width: 100%;
+      max-height: 220px;
+      object-fit: cover;
+      border-radius: 9px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ── Slider ── */
+    .slider-track {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .slider-label { font-size: 0.78rem; color: var(--text-muted); flex-shrink: 0; }
+    input[type="range"] {
+      flex: 1;
+      height: 5px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* ── Resolution radio ── */
+    .radio-group { display: flex; gap: 10px; }
+    .radio-opt { flex: 1; position: relative; }
+    .radio-opt input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .radio-opt label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.88rem;
+      transition: all 0.18s;
+      margin: 0;
+      user-select: none;
+    }
+    .radio-opt input[type="radio"]:checked + label {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.09);
+      color: var(--primary);
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: 9px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-family: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      padding: 10px 18px;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+    .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .btn-ghost {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+      padding: 10px 14px;
+    }
+    .btn-ghost:hover { border-color: #cbd5e1; background: #f8fafc; }
+    .btn-full { width: 100%; padding: 13px; font-size: 1rem; }
+
+    /* ── Status box ── */
+    #statusIdle { color: var(--text-muted); font-size: 0.9rem; }
+    .status-box { display: none; border-radius: 9px; padding: 14px 16px; }
+    .status-box.pending { background: #fef9c3; border: 1px solid #fde68a; color: #854d0e; }
+    .status-box.error   { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; }
+    .status-box.success { background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; }
+    .status-row { display: flex; align-items: flex-start; gap: 10px; }
+    .spinner {
+      flex-shrink: 0;
+      margin-top: 2px;
+      width: 16px; height: 16px;
+      border: 2.5px solid rgba(0,0,0,0.12);
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #statusText { font-weight: 600; font-size: 0.9rem; }
+    #statusSub { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; word-break: break-all; }
+
+    /* ── Result ── */
+    #resultBox { display: none; }
+    video { width: 100%; border-radius: 10px; background: #000; display: block; }
+    .video-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>AI 视频生成器</h1>
+    <p>上传图片 · 填写提示词 · 一键生成 AI 视频</p>
+  </header>
+
+  <!-- API Key -->
+  <div class="card">
+    <div class="card-title">API 设置</div>
+    <div class="form-group">
+      <label for="apiKey">
+        DashScope API Key
+        <span class="saved-badge" id="savedBadge">✓ 已保存</span>
+      </label>
+      <div class="api-key-row">
+        <input type="password" id="apiKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+        <button class="btn btn-ghost" id="toggleBtn" onclick="toggleKey()">显示</button>
+        <button class="btn btn-primary" onclick="saveApiKey()">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- Left column: inputs -->
+    <div>
+
+      <!-- Image upload -->
+      <div class="card">
+        <div class="card-title">上传图片（首帧）</div>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="imageInput" accept="image/*" onchange="handleFile(event)">
+          <div class="upload-icon" id="uploadIcon">📷</div>
+          <div class="upload-text" id="uploadText">点击或拖拽图片到此处</div>
+          <div class="upload-hint" id="uploadHint">支持 JPG、PNG、WEBP 等格式</div>
+        </div>
+        <img id="previewImg" alt="图片预览">
+      </div>
+
+      <!-- Parameters -->
+      <div class="card">
+        <div class="card-title">生成参数</div>
+
+        <div class="form-group">
+          <label for="prompt">提示词</label>
+          <textarea id="prompt" placeholder="描述视频内容，例如：人物缓缓转身，微风吹动头发，暖阳照射在脸上，电影质感…"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="duration">视频时长：<span id="durationVal">5</span> 秒</label>
+          <div class="slider-track">
+            <span class="slider-label">3s</span>
+            <input type="range" id="duration" min="3" max="15" value="5" step="1"
+                   oninput="document.getElementById('durationVal').textContent=this.value">
+            <span class="slider-label">15s</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>分辨率</label>
+          <div class="radio-group">
+            <div class="radio-opt">
+              <input type="radio" id="r720" name="res" value="720P" checked>
+              <label for="r720">720P</label>
+            </div>
+            <div class="radio-opt">
+              <input type="radio" id="r1080" name="res" value="1080P">
+              <label for="r1080">1080P</label>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" id="genBtn" onclick="generate()">
+          ▶ 生成视频
+        </button>
+      </div>
+
+    </div><!-- /left -->
+
+    <!-- Right column: status + result -->
+    <div>
+
+      <div class="card">
+        <div class="card-title">生成状态</div>
+        <div id="statusIdle">等待生成…</div>
+        <div class="status-box" id="statusBox">
+          <div class="status-row">
+            <div class="spinner" id="spinner"></div>
+            <div>
+              <div id="statusText"></div>
+              <div id="statusSub"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="resultBox">
+        <div class="card-title">生成结果</div>
+        <video id="resultVideo" controls playsinline></video>
+        <div class="video-actions">
+          <a id="dlLink" class="btn btn-primary" download="ai_video.mp4">↓ 下载视频</a>
+        </div>
+      </div>
+
+    </div><!-- /right -->
+
+  </div><!-- /main-grid -->
+
+</div><!-- /container -->
+
+<script>
+const STORE_KEY = 'dashscope_api_key';
+const API_BASE  = 'https://dashscope-intl.aliyuncs.com/api/v1';
+const NEG_PROMPT = 'deformed face, distorted face, disfigured, bad anatomy, multiple faces, face mutation, asymmetrical face, unnatural expression, stiff expression, frozen expression, dead eyes, different person, identity change, flickering, temporal inconsistency, worst quality, low quality, blurry';
+
+let imgBase64  = null;
+let busy       = false;
+let pollTimer  = null;
+let startTime  = 0;
+
+/* ── Init ── */
+(function () {
+  const saved = localStorage.getItem(STORE_KEY);
+  if (saved) {
+    document.getElementById('apiKey').value = saved;
+    document.getElementById('savedBadge').style.display = 'inline';
+  }
+  setupDrag();
+})();
+
+/* ── API Key ── */
+function saveApiKey() {
+  const v = document.getElementById('apiKey').value.trim();
+  if (!v) { alert('请输入 API Key'); return; }
+  localStorage.setItem(STORE_KEY, v);
+  const b = document.getElementById('savedBadge');
+  b.style.display = 'inline';
+  b.textContent = '✓ 已保存';
+}
+
+function toggleKey() {
+  const inp = document.getElementById('apiKey');
+  const btn = document.getElementById('toggleBtn');
+  const hide = inp.type === 'password';
+  inp.type = hide ? 'text' : 'password';
+  btn.textContent = hide ? '隐藏' : '显示';
+}
+
+/* ── Image ── */
+function setupDrag() {
+  const zone = document.getElementById('uploadZone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('image/')) readFile(f);
+  });
+}
+
+function handleFile(e) {
+  const f = e.target.files[0];
+  if (f) readFile(f);
+}
+
+function readFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    imgBase64 = e.target.result; // data:image/...;base64,...
+    document.getElementById('previewImg').src = imgBase64;
+    document.getElementById('previewImg').style.display = 'block';
+    document.getElementById('uploadIcon').textContent = '✅';
+    document.getElementById('uploadText').textContent = file.name;
+    document.getElementById('uploadHint').textContent =
+      (file.size > 1048576 ? (file.size / 1048576).toFixed(1) + ' MB' : Math.round(file.size / 1024) + ' KB');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ── Status helpers ── */
+function showStatus(type, text, sub) {
+  document.getElementById('statusIdle').style.display = 'none';
+  const box = document.getElementById('statusBox');
+  box.className = 'status-box ' + type;
+  box.style.display = 'block';
+  document.getElementById('statusText').textContent = text;
+  document.getElementById('statusSub').textContent = sub || '';
+  document.getElementById('spinner').style.display = type === 'pending' ? 'block' : 'none';
+}
+
+function resetStatus() {
+  document.getElementById('statusBox').style.display = 'none';
+  document.getElementById('statusIdle').style.display = 'block';
+}
+
+/* ── Generate ── */
+async function generate() {
+  if (busy) return;
+
+  const apiKey     = document.getElementById('apiKey').value.trim();
+  const prompt     = document.getElementById('prompt').value.trim();
+  const duration   = parseInt(document.getElementById('duration').value, 10);
+  const resolution = document.querySelector('input[name="res"]:checked').value;
+
+  if (!apiKey)   { alert('请先填写并保存 API Key'); return; }
+  if (!imgBase64) { alert('请先上传一张图片'); return; }
+  if (!prompt)   { alert('请填写提示词'); return; }
+
+  busy = true;
+  document.getElementById('genBtn').disabled = true;
+  document.getElementById('resultBox').style.display = 'none';
+  startTime = Date.now();
+
+  showStatus('pending', '正在提交任务…', '连接 DashScope 服务器');
+
+  const body = {
+    model: 'wan2.7-i2v-2026-04-25',
+    input: {
+      prompt,
+      media: [{ type: 'first_frame', url: imgBase64 }],
+      'negative_prompt ': NEG_PROMPT
+    },
+    parameters: { resolution, duration, prompt_extend: true, watermark: false }
+  };
+
+  try {
+    const resp = await fetch(`${API_BASE}/services/aigc/video-generation/video-synthesis`, {
+      method: 'POST',
+      headers: {
+        'X-DashScope-Async': 'enable',
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok || !data.output?.task_id) {
+      const code = data.code || `HTTP ${resp.status}`;
+      const msg  = data.message || '未知错误';
+      const hint = /overdue|standing|payment/i.test(msg)
+        ? '阿里云账号欠费或受限，请登录控制台处理'
+        : /invalid.*key|unauthorized/i.test(msg) || resp.status === 401
+          ? '请检查 API Key 是否正确'
+          : '请查看上方错误信息';
+      showStatus('error', `[${code}] ${msg}`, hint);
+      done();
+      return;
+    }
+
+    showStatus('pending', '任务已提交，视频生成中…',
+      `Task ID: ${data.output.task_id}  |  已等待 0s`);
+    poll(data.output.task_id, apiKey);
+
+  } catch (err) {
+    const isCors = err instanceof TypeError && err.message.toLowerCase().includes('fetch');
+    showStatus('error',
+      isCors ? '请求被浏览器拦截（CORS）' : '网络错误：' + err.message,
+      isCors ? '请在浏览器控制台查看详细错误' : '请检查网络连接');
+    done();
+  }
+}
+
+function poll(taskId, apiKey) {
+  fetch(`${API_BASE}/tasks/${taskId}`, {
+    headers: { 'Authorization': `Bearer ${apiKey}` }
+  })
+  .then(r => r.json())
+  .then(data => {
+    const status = data.output?.task_status;
+    const elapsed = Math.round((Date.now() - startTime) / 1000);
+
+    if (status === 'SUCCEEDED') {
+      const url = data.output.video_url;
+      document.getElementById('resultVideo').src = url;
+      document.getElementById('dlLink').href = url;
+      document.getElementById('resultBox').style.display = 'block';
+      document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth' });
+      showStatus('success', '视频生成成功！', `共耗时约 ${elapsed}s`);
+      done();
+    } else if (status === 'FAILED') {
+      showStatus('error', '生成失败', data.output?.message || '任务执行出错，请重试');
+      done();
+    } else {
+      showStatus('pending', '视频生成中，请稍候…',
+        `Task ID: ${taskId}  |  已等待 ${elapsed}s  |  状态：${status}`);
+      pollTimer = setTimeout(() => poll(taskId, apiKey), 5000);
+    }
+  })
+  .catch(err => {
+    showStatus('error', '轮询出错：' + err.message, '5 秒后重试…');
+    pollTimer = setTimeout(() => poll(taskId, apiKey), 5000);
+  });
+}
+
+function done() {
+  busy = false;
+  document.getElementById('genBtn').disabled = false;
+}
+</script>
+</body>
+</html>
