@@ -910,13 +910,13 @@ async function callXaiOptimize(originalPrompt, xaiKey, proxy) {
       'Authorization': `Bearer ${xaiKey}`
     },
     body: JSON.stringify({
-      model: 'grok-4-1-fast-reasoning',
+      model: 'grok-4.3',
       input: [
         {
           role: 'system',
           content: '你是一个资深的视频生成AI领域专家，你擅长将用户的视频生成提示词优化地明确而详细。每当用户发送给你一条消息，你需要认为改消息是一条视频生成提示词。你需要将原消息变成更加明确的提示词并输出。你的回答必须是转换后的提示词内容本身，不能包含别的解释性、总结性等任何无关内容，你的回答文字的100%都是转换后的提示词本身。你的功能是用于优化视频编辑提示词（首帧为用户上传图片）而非从0开始的视频生成提示词，因此不要回答成从0制作视频的风格。回答必须使用中文。不要强调视频时常与画质。除非用户提示词明确提到可以变动镜头，否则镜头应该保持固定。'
         },
-        { role: 'user', content: originalPrompt }
+        { role: 'user', content: originalPrompt.replace(/[\r\n]+/g, '') }
       ]
     })
   });
@@ -925,8 +925,10 @@ async function callXaiOptimize(originalPrompt, xaiKey, proxy) {
     throw new Error(err.error?.message || `xAI HTTP ${resp.status}`);
   }
   const data = await resp.json();
-  const textItem = data.output?.[0]?.content?.find(c => c.type === 'output_text');
-  if (!textItem?.text) throw new Error('无法解析 xAI 返回内容');
+  console.log('[xAI raw response]', JSON.stringify(data, null, 2));
+  const messageItem = data.output?.find(o => o.type === 'message');
+  const textItem = messageItem?.content?.find(c => c.type === 'output_text');
+  if (!textItem?.text) throw new Error('无法解析 xAI 返回内容，原始响应已打印至控制台（F12）');
   return textItem.text;
 }
 
