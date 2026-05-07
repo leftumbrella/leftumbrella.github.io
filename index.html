@@ -347,6 +347,16 @@
     }
     .hist-del:hover { color: #ef4444; background: #fee2e2; }
     #histEmpty { color: var(--text-muted); font-size: 0.9rem; text-align: center; padding: 24px 0; }
+
+    /* ── Proxy hint ── */
+    .proxy-hint {
+      font-size: 0.76rem; color: var(--text-muted);
+      margin-top: 5px; line-height: 1.5;
+    }
+    .proxy-hint code {
+      background: #f1f5f9; padding: 1px 5px; border-radius: 4px;
+      font-size: 0.74rem;
+    }
   </style>
 </head>
 <body>
@@ -369,6 +379,14 @@
         <input type="password" id="apiKey" placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx" autocomplete="off" spellcheck="false" onchange="saveApiKey()" onblur="saveApiKey()">
         <button class="btn btn-ghost" id="toggleBtn" onclick="toggleKey()">显示</button>
         <button class="btn btn-primary" onclick="saveApiKey()">保存</button>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:4px">
+      <label for="proxyUrl">CORS 代理 URL <span style="font-weight:400;color:var(--text-muted)">(GitHub Pages 必填)</span></label>
+      <input type="text" id="proxyUrl" placeholder="https://your-worker.your-name.workers.dev"
+             spellcheck="false" onchange="saveProxy()" onblur="saveProxy()">
+      <div class="proxy-hint">
+        部署 <code>worker.js</code> 到 Cloudflare Workers（免费），将 Worker 地址填入此处即可解决跨域问题。
       </div>
     </div>
   </div>
@@ -473,8 +491,15 @@
 </div><!-- /container -->
 
 <script>
-const STORE_KEY = 'dashscope_api_key';
-const API_BASE  = 'https://dashscope-intl.aliyuncs.com/api/v1';
+const STORE_KEY  = 'dashscope_api_key';
+const PROXY_KEY  = 'dashscope_proxy';
+const API_ORIGIN = 'https://dashscope-intl.aliyuncs.com';
+const API_BASE   = `${API_ORIGIN}/api/v1`;
+
+function apiUrl(path) {
+  const proxy = localStorage.getItem(PROXY_KEY) || '';
+  return proxy ? `${proxy.replace(/\/$/, '')}/api/v1${path}` : `${API_BASE}${path}`;
+}
 const NEG_PROMPT = 'deformed face, distorted face, disfigured, bad anatomy, multiple faces, face mutation, asymmetrical face, unnatural expression, stiff expression, frozen expression, dead eyes, different person, identity change, flickering, temporal inconsistency, worst quality, low quality, blurry';
 
 let imgBase64     = null;
@@ -493,6 +518,9 @@ const URL_TTL   = 24 * 60 * 60 * 1000; // treat URLs older than 24h as likely ex
     document.getElementById('apiKey').value = saved;
     document.getElementById('savedBadge').style.display = 'inline';
   }
+  const proxy = localStorage.getItem(PROXY_KEY) || 'https://small-mud-95c9.lefthhau.workers.dev';
+  document.getElementById('proxyUrl').value = proxy;
+  if (!localStorage.getItem(PROXY_KEY)) localStorage.setItem(PROXY_KEY, proxy);
   setupDrag();
   renderHistory();
 })();
@@ -505,6 +533,12 @@ function saveApiKey() {
   const b = document.getElementById('savedBadge');
   b.style.display = 'inline';
   b.textContent = '✓ 已保存';
+}
+
+function saveProxy() {
+  const v = document.getElementById('proxyUrl').value.trim();
+  if (v) localStorage.setItem(PROXY_KEY, v);
+  else localStorage.removeItem(PROXY_KEY);
 }
 
 function toggleKey() {
@@ -630,7 +664,7 @@ async function generate() {
   };
 
   try {
-    const resp = await fetch(`${API_BASE}/services/aigc/video-generation/video-synthesis`, {
+    const resp = await fetch(apiUrl('/services/aigc/video-generation/video-synthesis'), {
       method: 'POST',
       headers: {
         'X-DashScope-Async': 'enable',
@@ -681,7 +715,7 @@ function poll(taskId) {
   const task = activeTasks.get(taskId);
   if (!task) return;
 
-  fetch(`${API_BASE}/tasks/${taskId}`, {
+  fetch(apiUrl(`/tasks/${taskId}`), {
     headers: { 'Authorization': `Bearer ${task.apiKey}` }
   })
   .then(r => r.json())
