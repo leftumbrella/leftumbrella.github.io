@@ -418,7 +418,14 @@
       letter-spacing: 0.02em;
     }
     .tag.expired { background: rgba(217,119,6,0.08); color: var(--amber); }
-    .hist-actions { display: flex; gap: 6px; margin-top: 2px; }
+    .hist-thumb {
+      max-height: 90px;
+      max-width: 100%;
+      border-radius: 7px;
+      display: block;
+      align-self: flex-start;
+    }
+    .hist-actions { display: flex; gap: 6px; margin-top: 2px; flex-wrap: wrap; }
     .hist-del {
       position: absolute; top: 12px; right: 12px;
       background: none; border: none; cursor: pointer;
@@ -581,6 +588,8 @@ function apiUrl(path) {
 const NEG_PROMPT = 'deformed face, distorted face, disfigured, bad anatomy, multiple faces, face mutation, asymmetrical face, unnatural expression, stiff expression, frozen expression, dead eyes, different person, identity change, flickering, temporal inconsistency, worst quality, low quality, blurry';
 
 let imgBase64     = null;
+let imgWidth      = 0;
+let imgHeight     = 0;
 let submitting    = false;
 const activeTasks = new Map();
 let tickInterval  = null;
@@ -602,7 +611,7 @@ function resumeActiveTasks() {
   catch { localStorage.removeItem(ACTIVE_KEY); return; }
   for (const t of saved) {
     activeTasks.set(t.id, { prompt: t.prompt, resolution: t.resolution,
-      duration: t.duration, startTime: t.startTime, apiKey: t.apiKey });
+      duration: t.duration, startTime: t.startTime, apiKey: t.apiKey, thumb: t.thumb || null });
     poll(t.id);
   }
   if (activeTasks.size) { startTick(); renderActiveTasks(); }
@@ -621,6 +630,7 @@ function resumeActiveTasks() {
   setupDrag();
   renderHistory();
   resumeActiveTasks();
+  setTimeout(() => { if (document.activeElement) document.activeElement.blur(); }, 100);
 })();
 
 /* ── API Key ── */
@@ -671,10 +681,21 @@ function readFile(file) {
     imgBase64 = e.target.result;
     document.getElementById('previewImg').src = imgBase64;
     document.getElementById('previewImg').style.display = 'block';
-    document.getElementById('uploadIcon').textContent = '✅';
-    document.getElementById('uploadText').textContent = file.name;
-    document.getElementById('uploadHint').textContent =
-      (file.size > 1048576 ? (file.size / 1048576).toFixed(1) + ' MB' : Math.round(file.size / 1024) + ' KB');
+    const sizeStr = file.size > 1048576
+      ? (file.size / 1048576).toFixed(1) + ' MB'
+      : Math.round(file.size / 1024) + ' KB';
+    const dim = new Image();
+    dim.onload = () => {
+      imgWidth  = dim.naturalWidth;
+      imgHeight = dim.naturalHeight;
+      const ok  = imgWidth >= 240 && imgHeight >= 240;
+      document.getElementById('uploadIcon').textContent = ok ? '✅' : '⚠️';
+      document.getElementById('uploadText').textContent = file.name;
+      document.getElementById('uploadHint').textContent = ok
+        ? `${imgWidth} × ${imgHeight} · ${sizeStr}`
+        : `⚠️ ${imgWidth} × ${imgHeight} — 宽高均需 ≥ 240px`;
+    };
+    dim.src = imgBase64;
   };
   reader.readAsDataURL(file);
 }
@@ -734,6 +755,24 @@ function renderActiveTasks() {
   }).join('');
 }
 
+/* ── Thumbnail ── */
+function createThumbnail(dataUrl, maxPx = 120) {
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(maxPx / img.width, maxPx / img.height, 1);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(c.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+}
+
 /* ── Generate ── */
 async function generate() {
   if (submitting) return;
@@ -745,6 +784,10 @@ async function generate() {
 
   if (!apiKey)    { alert('请先填写并保存 API Key'); return; }
   if (!imgBase64) { alert('请先上传一张图片'); return; }
+  if (imgWidth < 240 || imgHeight < 240) {
+    alert(`图片尺寸 ${imgWidth}×${imgHeight} 不符合要求\n宽和高均需 ≥ 240px，请更换图片`);
+    return;
+  }
   if (!prompt)    { alert('请填写提示词'); return; }
 
   submitting = true;
@@ -789,7 +832,8 @@ async function generate() {
     }
 
     const taskId = data.output.task_id;
-    activeTasks.set(taskId, { prompt, resolution, duration, startTime: Date.now(), apiKey });
+    const thumb = imgBase64 ? await createThumbnail(imgBase64) : null;
+    activeTasks.set(taskId, { prompt, resolution, duration, startTime: Date.now(), apiKey, thumb });
     persistActiveTasks();
 
     submitting = false;
@@ -826,7 +870,7 @@ function poll(taskId) {
       activeTasks.delete(taskId);
       persistActiveTasks();
       renderActiveTasks();
-      saveHistory({ taskId, url, elapsed, prompt: task.prompt, resolution: task.resolution, duration: task.duration });
+      saveHistory({ taskId, url, elapsed, prompt: task.prompt, resolution: task.resolution, duration: task.duration, thumb: task.thumb || null });
       document.getElementById('resultVideo').src = url;
       document.getElementById('dlLink').href = url;
       document.getElementById('resultBox').style.display = 'block';
@@ -865,9 +909,9 @@ function copyPromptFromBtn(btn) {
 }
 
 /* ── History ── */
-function saveHistory({ taskId, url, elapsed, prompt, resolution, duration }) {
+function saveHistory({ taskId, url, elapsed, prompt, resolution, duration, thumb }) {
   const list = getHistList();
-  list.unshift({ id: Date.now(), timestamp: Date.now(), prompt, resolution, duration, url, elapsed, taskId });
+  list.unshift({ id: Date.now(), timestamp: Date.now(), prompt, resolution, duration, url, elapsed, taskId, thumb: thumb || null });
   if (list.length > HIST_MAX) list.length = HIST_MAX;
   localStorage.setItem(HIST_KEY, JSON.stringify(list));
   renderHistory();
@@ -918,6 +962,7 @@ function renderHistory() {
     <div class="hist-item">
       <button class="hist-del" title="删除" onclick="deleteHistItem(${item.id})">×</button>
       <div class="hist-time">${timeStr} · 耗时 ${item.elapsed}s</div>
+      ${item.thumb ? `<img class="hist-thumb" src="${item.thumb}" alt="首帧缩略图">` : ''}
       <div class="hist-prompt">${promptEsc}</div>
       <div class="hist-tags">
         <span class="tag">${item.resolution}</span>
