@@ -393,7 +393,7 @@
     }
     .history-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(256px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 12px;
     }
     .hist-item {
@@ -438,7 +438,7 @@
       display: block;
       align-self: flex-start;
     }
-    .hist-actions { display: flex; gap: 6px; margin-top: 2px; flex-wrap: wrap; }
+    .hist-actions { display: flex; gap: 6px; margin-top: 2px; flex-wrap: nowrap; }
     .hist-del {
       position: absolute; top: 12px; right: 12px;
       background: none; border: none; cursor: pointer;
@@ -448,6 +448,21 @@
     }
     .hist-del:hover { color: var(--red); background: rgba(220,38,38,0.08); }
     #histEmpty { color: var(--text-3); font-size: 0.875rem; text-align: center; padding: 28px 0; }
+    .hist-inline-player {
+      display: none;
+      margin-top: 4px;
+    }
+    .hist-inline-player video {
+      width: 100%; border-radius: 8px; background: #000; display: block;
+    }
+    .hist-inline-close {
+      width: 100%; margin-top: 6px; padding: 5px;
+      font-size: 0.78rem; background: none;
+      border: 1px solid rgba(15,23,42,0.12); border-radius: 7px;
+      cursor: pointer; color: var(--text-3);
+      transition: background 0.15s, color 0.15s;
+    }
+    .hist-inline-close:hover { background: var(--surface-2); color: var(--text); }
 
     /* ── Favorites ── */
     .favs-list { display: flex; flex-direction: column; gap: 8px; }
@@ -1233,13 +1248,30 @@ function clearHistory() {
   renderHistory();
 }
 
-function playFromHistory(url) {
-  showTab('generate');
-  const video = document.getElementById('resultVideo');
-  const box   = document.getElementById('resultBox');
-  video.src = url;
-  box.style.display = 'block';
-  box.scrollIntoView({ behavior: 'smooth' });
+function playFromHistory(id, url) {
+  // Close all other inline players
+  document.querySelectorAll('.hist-inline-player').forEach(p => {
+    if (p.dataset.histId !== String(id)) {
+      p.style.display = 'none';
+      const v = p.querySelector('video');
+      if (v) { v.pause(); v.src = ''; }
+    }
+  });
+
+  const player = document.getElementById('hist-player-' + id);
+  if (!player) return;
+
+  if (player.style.display === 'block') {
+    player.style.display = 'none';
+    const v = player.querySelector('video');
+    if (v) { v.pause(); v.src = ''; }
+  } else {
+    const v = player.querySelector('video');
+    v.src = url;
+    player.style.display = 'block';
+    v.play().catch(() => {});
+    player.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
 }
 
 function showTab(name) {
@@ -1276,13 +1308,17 @@ function renderHistory() {
         <span class="tag">${item.duration}s</span>
         ${expired ? '<span class="tag expired">链接可能已过期</span>' : ''}
       </div>
+      <div class="hist-inline-player" id="hist-player-${item.id}" data-hist-id="${item.id}">
+        <video controls playsinline></video>
+        <button class="hist-inline-close" onclick="playFromHistory(${item.id}, '${item.url}')">▲ 收起</button>
+      </div>
       <div class="hist-actions">
         <button class="btn btn-primary" style="padding:7px 14px;font-size:0.8rem"
-          onclick="playFromHistory('${item.url}')">▶ 播放</button>
+          onclick="playFromHistory(${item.id}, '${item.url}')">▶ 播放</button>
         <button class="btn btn-ghost" style="padding:7px 14px;font-size:0.8rem"
           onclick="saveVideo(this,'${item.url}','ai_video_${item.id}.mp4')">↓ 下载</button>
         <button class="btn btn-ghost" style="padding:7px 14px;font-size:0.8rem"
-          data-prompt="${promptEsc}" onclick="copyPromptFromBtn(this)">复制提示词</button>
+          data-prompt="${promptEsc}" onclick="copyPromptFromBtn(this)">复制</button>
         <button class="btn btn-ghost" style="padding:7px 14px;font-size:0.8rem"
           data-prompt="${promptEsc}" onclick="favFromBtn(this)">☆ 收藏</button>
       </div>
